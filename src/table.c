@@ -15,14 +15,22 @@ int key_hash(char *key, int l){
 
 struct table_t *table_create(int n) {
 
+
   /* n tem valor válido? */
+	if(n <= 0){ return NULL; }
 
   /* Alocar memória para struct table_t */
-
+	struct table_t *new_table = (struct table_t *) malloc(sizeof(struct table_t));
+	if(new_table == NULL){ return NULL; } //verifica se not null
   /* Alocar memória para array de listas com n entradas 
-     que ficará referenciado na struct table_t alocada. 
-
-     Inicializar listas.
+     que ficará referenciado na struct table_t alocada.*/ 
+	struct $
+	{
+		
+	};
+	new_table->tabela = tabelaAux;
+  	
+  /*   Inicializar listas.
 
      Inicializar atributos da tabela.
   */
