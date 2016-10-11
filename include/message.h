@@ -1,7 +1,6 @@
 #ifndef _MESSAGE_H
 #define _MESSAGE_H
 
-#include "data.h"
 #include "entry.h"
 
 /* Define os possíveis opcodes da mensagem */
@@ -12,11 +11,11 @@
 #define OC_PUT		50
 
 /* Define códigos para os possíveis conteúdos da mensagem */
-#define CT_RESULT		10
-#define CT_VALUE		20
+#define CT_RESULT	10
+#define CT_VALUE	20
 #define CT_KEY		30
 #define CT_KEYS		40
-#define CT_ENTRY		50
+#define CT_ENTRY	50
 
 /* Estrutura que representa uma mensagem genérica a ser transmitida.
  * Esta mensagem pode ter vários tipos de conteúdos.
@@ -44,15 +43,15 @@ struct message_t {
  *  
  * a partir daí, o formato difere para cada tipo de conteúdo (c_type):
  * CT_ENTRY		KEYSIZE(KS)		KEY 		DATASIZE(DS)	DATA
- *				[2 bytes]		[KS bytes]	[4 bytes]		[DS bytes]
+ *			[2 bytes]		[KS bytes]	[4 bytes]	[DS bytes]
  * CT_KEY		KEYSIZE(KS)		KEY 		
- *				[2 bytes]		[KS bytes]
- * CT_KEYS		NKEYS			KEYSIZE(KS)	KEY			...
- *				[4 bytes]		[2 bytes]	[KS bytes]	...
- * CT_VALUE		DATASIZE(DS)	DATA
- *				[4 bytes]		[DS bytes]
- * CT_RESULT	RESULT
- *				[4 bytes]
+ *			[2 bytes]		[KS bytes]
+ * CT_KEYS		NKEYS			KEYSIZE(KS)	KEY		...
+ *			[4 bytes]		[2 bytes]	[KS bytes]	...
+ * CT_VALUE		DATASIZE(DS)		DATA
+ *			[4 bytes]		[DS bytes]
+ * CT_RESULT		RESULT
+ *			[4 bytes]
  *
  * Notar que o `\0´ no fim da string e o NULL no fim do array de
  * chaves não são enviados nas mensagens.

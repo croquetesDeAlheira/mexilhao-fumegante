@@ -1,15 +1,13 @@
-﻿#ifndef _TABLE_PRIVATE_H
+#ifndef _TABLE_PRIVATE_H
 #define _TABLE_PRIVATE_H
 
-#include "list-h"
+#include "table.h"
 
 struct table_t{
-	struct list_t tabela[]; //um array de list_t
-	int maxTabelaSize; // numero de linhas da tabela
-	int tabelaSize; // tamanho da tabela com linhas preenchidas
-}
+	struct list_t /* continuar definição */;
+	int size; /* Dimensão da tabela */
+};
 
-
-
+int key_hash(char *key, int l);
 
 #endif
