@@ -12,7 +12,7 @@ struct table_t *table_create(int n){
 	if(n < 0){
 		return NULL;
 	}
-	struct table_t *table = (struct table_t *) malloc(sizeof(struct table_t));
+	struct table_t *table = (struct table_t *)
 }
 
 /* Libertar toda a memória ocupada por uma tabela.
