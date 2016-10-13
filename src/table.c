@@ -18,8 +18,18 @@ const int EQUALS = 0;
 int key_hash(char *key, int l){
 
   /* Verificar se key é NULL */
-
+	if(key == NULL){return NULL;}
   /* l tem valor válido? */
+	if(l < 0){return NULL;}
+	int soma, keySize, ind;
+	if((keySize = strlen(key)) < 6){
+		for(ind = 0; ind < keySize; ind++)
+			soma+=key[ind];
+	}else{
+		for(ind = 0; ind < 3; ind++)
+			soma+=key[ind];
+		soma = soma + key[keySize-2] + key[keySize-1];
+	}
 
   return soma % l;
 }
