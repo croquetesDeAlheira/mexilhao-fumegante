@@ -28,6 +28,7 @@ int key_hash(char *key, int l){
 	}else{
 		for(ind = 0; ind < 3; ind++)
 			soma+=key[ind];
+		
 		soma = soma + key[keySize-2] + key[keySize-1];
 	}
 
