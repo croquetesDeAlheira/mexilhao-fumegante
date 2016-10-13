@@ -12,13 +12,13 @@ CFLAGS = -I include
 #OBJFILES_DATA = $(OBJ)/data.o $(OBJ)/entry.o $(OBJ)/list.o $(OBJ)/test_data.o
 #OBJFILES_ENTRY = $(OBJ)/data.o $(OBJ)/entry.o $(OBJ)/list.o $(OBJ)/test_entry.o
 #OBJFILES_LIST = $(OBJ)/data.o $(OBJ)/entry.o $(OBJ)/list.o $(OBJ)/test_list.o
-OBJFILES_TABLE = $(OBJ)/data.o $(OBJ)/entry.o $(OBJ)/list.o $(OBJ)/test_table.o
+OBJFILES_TABLE = $(OBJ)/data.o $(OBJ)/entry.o $(OBJ)/list.o $(OBJ)/table.o $(OBJ)/test_table.o
 #OBJFILES_MESSAGE = $(OBJ)/data.o $(OBJ)/entry.o $(OBJ)/list.o $(OBJ)/test_message.o
 
 #all: test_list test_entry test_data
 
 #test_message: $(OBJFILES_MESSAGE)
-	gcc -o test_message $(OBJFILES_MESSAGE)
+#	gcc -o test_message $(OBJFILES_MESSAGE)
 
 test_table: $(OBJFILES_TABLE)
 	gcc -o test_table $(OBJFILES_TABLE)
@@ -35,7 +35,7 @@ test_table: $(OBJFILES_TABLE)
 #$(OBJ)/test_message.o: test_message.c $(INC)/message-private.h
 #	gcc $(CFLAGS) -c test_message.c -o $(OBJ)/test_message.o
 	
-$(OBJ)/test_table.o: test_table.c $(INC)/table-private.h
+$(OBJ)/test_table.o: test_table.c $(INC)/data.h $(INC)/entry.h $(INC)/table-private.h 
 	gcc $(CFLAGS) -c test_table.c -o $(OBJ)/test_table.o
 
 #$(OBJ)/test_list.o: test_list.c $(INC)/list-private.h
@@ -64,7 +64,7 @@ $(OBJ)/data.o: $(SRC)/data.c $(INC)/data.h
 			
 clean:
 	rm -f obj/*.o
-	rm -f test_data test_entry test_list
+	rm -f test_table
 	rm -f *~
 	
 .PHONY: clean
