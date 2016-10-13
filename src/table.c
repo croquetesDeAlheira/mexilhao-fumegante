@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "table-private.h"
+#include "../include/table-private.h"
 
 //constants
 const int OK = 0;
@@ -13,9 +13,10 @@ const int EQUALS = 0;
 int key_hash(char *key, int l){
 
   /* Verificar se key é NULL */
-	if(key == NULL){return NULL;}
+	if(key == NULL){ return; }
   /* l tem valor válido? */
-	if(l < 0){return NULL;}
+	if(l < 0){ return; }
+
 	int soma=0, keySize, ind;
 	if((keySize = strlen(key)) < 6){
 		for(ind = 0; ind < keySize; ind++)
@@ -51,7 +52,8 @@ struct table_t *table_create(int n) {
   /* Inicializar listas.
      Inicializar atributos da tabela.
   */
-	for (int i = 0; i < n; i++) {
+	int i;
+	for (i = 0; i < n; i++) {
 		struct list_t *list = list_create();
 		if (list == NULL) { 
 			// Tem de destruir todas as outras listas criadas anteriormente
@@ -81,7 +83,8 @@ void table_destroy(struct table_t *table) {
 	/*Libertar memória das listas.
 	  Libertar memória da tabela.
 	*/
-	for (int i = 0; i < table->size; i++) {
+	int i;
+	for (i = 0; i < table->size; i++) {
 		list = table->tabela[i];
 		// Verifica se alguma linha está a NULL
 		if (list != NULL) { list_destroy(list); }
@@ -96,7 +99,7 @@ void table_destroy(struct table_t *table) {
  * Devolve 0 (ok) ou -1 (out of memory, outros erros)
  */
 int table_put(struct table_t *table, char *key, struct data_t *value) {
-  int resut;
+  int result;
   // Verifica value...Restante verificado pelo table_get
   if (value == NULL) {return ERROR; }
   // Verifica se já existe na tabela um par {chave, valor}
@@ -209,7 +212,7 @@ char **table_get_keys(struct table_t *table) {
 		// Copia as chaves que existe na linha da tabela hash
 		while(keys_by_line != NULL) {
 			all_keys[count_keys] = strdup(keys_by_line);
-			if (all_keys(count_keys) == NULL) {
+			if (all_keys[count_keys] == NULL) {
 				list_free_keys(all_keys);
 				return NULL;
 			}
@@ -239,10 +242,10 @@ void table_free_keys(char **keys) {
   Devolve 0 (OK) ou -1 (out of memory, outros erros) 
 */
 int insert(struct table_t *table, char *key, struct data_t *value) {
-	struct entry_t entry*;
-  int index;
-  struct list*;
-  int result;
+	struct entry_t *entry;
+ 	int index;
+  	struct list_t *list;
+  	int result;
 
   /* Verificar valores de entrada */
 	if (table == NULL || key == NULL || value == NULL) { return ERROR; }
