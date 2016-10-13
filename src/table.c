@@ -10,11 +10,6 @@ const int ERROR = -1;
 const int NOTHING_CHANGED = 1;
 const int EQUALS = 0;
 
-
-
-
-
-
 int key_hash(char *key, int l){
 
   /* Verificar se key é NULL */
@@ -28,31 +23,39 @@ int key_hash(char *key, int l){
  * linhas(n = módulo da função hash)
  */
 struct table_t *table_create(int n) {
-
-
   /* n tem valor válido? */
-	if(n <= 0){ return NULL; }
+	if (n <= 0) { return NULL; }
 
   /* Alocar memória para struct table_t */
 	struct table_t *new_table = (struct table_t *) malloc(sizeof(struct table_t));
-	if(new_table == NULL){ return NULL; } //verifica se not null
+	if (new_table == NULL) { return NULL; } //verifica se not null
   /* Alocar memória para array de listas com n entradas 
      que ficará referenciado na struct table_t alocada.*/ 
-	struct table_t *tabelaAux[n];
-	if(tabelaAux == NULL){ return NULL; }
+	new_table->tabela = (struct list_t **)malloc(n * sizeof(struct list_t*));
+	if (new_table->tabela == NULL) { 
+		return NULL; 
+		free(new_table);
+	}
   	
-  /*   Inicializar listas.
-
+  /* Inicializar listas.
      Inicializar atributos da tabela.
   */
-	for (int i = 0; i < n; ++i){
+	for (int i = 0; i < n; i++) {
 		struct list_t *list = list_create();
-		if(list == NULL){return NULL;} //nao ha memoria
-		tabelaAux[i] = list;
+		if (list == NULL) { 
+			// Tem de destruir todas as outras listas criadas anteriormente
+			// Ex: erro em new_table->tabela[2] = list;
+			// Tem de libertas new_table->tabela[1] e new_table->tabela[0]
+			// Chama o table_destroy passando o table criado
+			table_destroy(new_table);
+			return NULL; 
+		}
+		// Aloca um novo apontador de lista a cada linha da tabela
+		new_table->tabela[i] = list;
 	}
-	new_table->tabela = tabelaAux;
-	new_table->size = 0;
-	new_table->maxSize = n;
+	// Inicializa restantes atributos
+	new_table->size = n;
+	new_table->nElems = 0;
 	return new_table;
 }
 
@@ -60,16 +63,20 @@ struct table_t *table_create(int n) {
 /* Libertar toda a memória ocupada por uma tabela.
  */
 void table_destroy(struct table_t *table) {
-
-  	/* table é NULL? */
-	if(table == NULL){return; /*do nothing*/ }
+	struct list_t *list;
+  	
+  /* table é NULL? */
+	if (table == NULL) { return; /*do nothing*/ }
 	/*Libertar memória das listas.
 	  Libertar memória da tabela.
 	*/
-	for (int i = 0; i < table->maxSize; ++i){
-		list_destroy(table->tabela[i]);
-	} //destroy todas as listas de cada entrada da tabela...
-	free(table);  
+	for (int i = 0; i < table->size; i++) {
+		list = table->tabela[i];
+		// Verifica se alguma linha está a NULL
+		if (list != NULL) { list_destroy(list); }
+	}
+	// Liberta a tabela
+	free(table);
 }
 
 
@@ -78,42 +85,32 @@ void table_destroy(struct table_t *table) {
  * Devolve 0 (ok) ou -1 (out of memory, outros erros)
  */
 int table_put(struct table_t *table, char *key, struct data_t *value) {
+  int resut;
+  // Verifica value...Restante verificado pelo table_get
+  if (value == NULL) {return ERROR; }
+  // Verifica se já existe na tabela um par {chave, valor}
+  // Se True então não faz o put e sai
+  if (table_get(table, key) != NULL) { return ERROR; }
 
-  /* Verificar valores de entrada */
-	if(table == NULL || key == NULL || value == NULL){ return ERROR;}
+  result = insert(table, key, value);
 
-  /* Criar entry com par chave/valor */
-	struct entry_t *entry = entry_create(key, value);
-	//Verifica just in case , O CREATE JA O FAZ
-	if(entry == NULL){return ERROR; }
-  /* Executar hash para determinar onde inserir a entry na tabela */
-	int index = key_hash(key, table->maxSize); 
-  /* Inserir entry na tabela */
-	/*cria uma var que guarda o size da list no index.*/
-	int listSize = list_size(table->tabela[index]);
-	int result = list_add(table->tabela[index], entry); //OK se tudo correu bem
-	if(result == OK){
-		if(listSize == list_size(table->tabela[index])){
-			//fez update e nao add new
-			return OK;
-		}else{
-			//incrementa size
-			table->size++;
-			return OK;
-		}
-	}else{
-		return ERROR;
-	}
+  if (result == OK) { table->nElems++; }
+
+  return result;
 }
-
 
 /* Função para substituir na tabela, o valor associado à chave key. 
  * Os dados de entrada desta função deverão ser copiados.
  * Devolve 0 (OK) ou -1 (out of memory, outros erros)
  */
-int table_update(struct table_t *table, char * key, struct data_t *value) {
-	//chama o put? o list_add ja faz o update se for repetido
-	return table_put(table, key, value);
+int table_update(struct table_t *table, char *key, struct data_t *value) {
+	// Verifica value...Restante verificado pelo table_get
+	if (value == NULL) { return ERROR; }
+	// Verifica se ja existe na tabela um par {chave, valor}
+	// Se isso for FALSE então NÂO faz update
+	if (table_get(table, key) == NULL) { return ERROR; }
+
+	return insert(table, key, value);
 }
 
 
@@ -122,18 +119,20 @@ int table_update(struct table_t *table, char * key, struct data_t *value) {
  * no contexto da função que chamou table_get.
  * Devolve NULL em caso de erro.
  */
-struct data_t *table_get(struct table_t *table, char * key){
+struct data_t *table_get(struct table_t *table, char *key){
+	 int index;
+	 struct entry_t *entry;
+
 	 /* Verificar valores de entrada */
-	if(table == NULL || key == NULL){ return NULL; }
-	 /* Verifica o hash index */
-	int index = key_hash(key, table->maxSize);
+	if (table == NULL || key == NULL) { return NULL; }
+	/* Verifica o hash index */
+	index = key_hash(key, table->size);
 	/*  buscar o entry na lista  */
-	struct entry_t entry = list_get(table->tabela[index], key);
+	entry = list_get(table->tabela[index], key);
 	/*  verificar se entry no null */ 
-	if(entry == NULL){return NULL; }
+	if (entry == NULL) { return NULL; }
 	/*  return o data do entry duplicado, pois é uma copia  */
 	return data_dup(entry->value);
-
 }
 
 /* Função para remover um par chave valor da tabela, especificado 
@@ -141,35 +140,63 @@ struct data_t *table_get(struct table_t *table, char * key){
  * Devolve: 0 (OK), -1 (nenhum tuplo encontrado; outros erros)
  */
 int table_del(struct table_t *table, char *key){
-	/*  verificar valores de entrada */
-	if(table == NULL || key == NULL){return ERROR; }
+	int index;
+	int result;
 
+	/*  verificar valores de entrada */
+	if(table == NULL || key == NULL) { return ERROR; }
 	/* encontrar o hash index*/
-	int index = key_hash(key, table->maxSize);
+	index = key_hash(key, table->size);
 
 	/* ja tenho a lista, remove esta key */
-	int result = list_remove(table->tabela[index], key);
-	if(result == OK){
-		table->size--;
-		return OK;
-	}else{
-		return ERROR;
-	}
-
+	result = list_remove(table->tabela[index], key);
+	// Remoção bem sucedida actualiza numero de Elmentos
+	if(result == OK) { table->nElems--; }
+	
+	return result;
 }
 
-/* Esta é dada! Ao estilo C! */
-/* Devolve o número de elementos na tabela.
- */
+/* Devolve o número de elementos na tabela */
 int table_size(struct table_t *table) {
-	return table == NULL ? -1 : table->size;
+	return table == NULL ? ERROR : table->nElems;
 }
 
 /* Devolve um array de char * com a cópia de todas as keys da tabela,
  * e um último elemento a NULL.
  */
 char **table_get_keys(struct table_t *table) {
+	char **all_keys;
+	char **keys_by_line;
+	int index, size;
+	struct table_t *h_table;
+	struct list_t *list;
 	
+	// Verifica tabela
+	if (table == NULL) { return NULL; }
+
+	size = table->size;
+	// Aloca memória para a tabela de todas as chaves
+	all_keys = (char **)malloc((size + 1) * sizeof(char*));
+	if (all_keys == NULL) { return NULL; }
+
+	// Percorrendo a lista e passando os valores
+	h_table = table->tabela;
+	index = 0;
+	while (index < size) {
+		// Lista a considerar
+		list = h_table[index];
+		// Chaves da lista considerada
+		keys_by_line = list_get_keys(list);
+
+		
+
+
+
+	}
+
+
+
+
 
 }
 
@@ -179,4 +206,43 @@ char **table_get_keys(struct table_t *table) {
 void table_free_keys(char **keys) {
 
 }
+
+/*
+  Função auxiliar que faz uma inserção 
+  um par {chave, valor} numa determinada tabela hash
+  Devolve 0 (OK) ou -1 (out of memory, outros erros) 
+*/
+int insert(struct table_t *table, char *key, struct data_t *value) {
+	struct entry_t entry*;
+  int index;
+  struct list*;
+  int result;
+
+  /* Verificar valores de entrada */
+	if (table == NULL || key == NULL || value == NULL) { return ERROR; }
+
+  /* Criar entry com par chave/valor */
+	entry = entry_create(key, value);
+	//Verifica entry
+	if (entry == NULL) { return ERROR; }
+  /* Executar hash para determinar onde inserir a entry na tabela */
+	index = key_hash(key, table->size); 
+	/* Linha da tabela a considerar */
+	list = table->tabela[index];
+	// Resultado de ter feito add do par {chave, valor}
+	// na lista list
+	result = list_add(list, entry);
+	// Destroi o entry criado porque independentemente do resultado,
+	// já nao vai ser usado nem preciso
+	entry_destroy(entry);
+  /* Devolve o resultado de list_add */
+	return list_add(list, entry);
+}
+
+
+
+
+
+
+
 
