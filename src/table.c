@@ -167,44 +167,59 @@ int table_size(struct table_t *table) {
 char **table_get_keys(struct table_t *table) {
 	char **all_keys;
 	char **keys_by_line;
-	int index, size;
+	int index, count_keys;
 	struct table_t *h_table;
 	struct list_t *list;
 	
 	// Verifica tabela
 	if (table == NULL) { return NULL; }
 
-	size = table->size;
 	// Aloca memória para a tabela de todas as chaves
-	all_keys = (char **)malloc((size + 1) * sizeof(char*));
+	all_keys = (char **)malloc((table->nElems + 1) * sizeof(char*));
 	if (all_keys == NULL) { return NULL; }
 
 	// Percorrendo a lista e passando os valores
-	h_table = table->tabela;
-	index = 0;
-	while (index < size) {
+	h_table = table->tabela; // Tabela hash
+	index = 0; // Indice da tabela hash
+	count_keys = 0; // indice **char keys: no final count_keys = table->nElems
+	
+	while (count_keys < table->nElems) {
 		// Lista a considerar
 		list = h_table[index];
 		// Chaves da lista considerada
 		keys_by_line = list_get_keys(list);
+		if (keys_by_line == NULL) { 
+			// Caso haja erro apaga
+			// O que já foi feito introduzido no all_keys
+			list_free_keys(all_keys); 
+			return NULL; 
+		}
 
-		
-
-
-
+		// Copia as chaves que existe na linha da tabela hash
+		while(keys_by_line != NULL) {
+			all_keys[count_keys] = strdup(keys_by_line);
+			if (all_keys(count_keys) == NULL) {
+				list_free_keys(all_keys);
+				return NULL;
+			}
+			count_keys++;
+			keys_by_line++;
+		}
+		// Passa para a proxima linha
+		index++;
 	}
 
+	// Ultimo elemento de all_keys tem de vir a NULL
+	all_keys[count_keys] = NULL;
 
-
-
-
+	return all_keys;
 }
 
 
 /* Liberta a memória alocada por table_get_keys().
  */
 void table_free_keys(char **keys) {
-
+	list_free_keys(keys);
 }
 
 /*
@@ -236,7 +251,7 @@ int insert(struct table_t *table, char *key, struct data_t *value) {
 	// já nao vai ser usado nem preciso
 	entry_destroy(entry);
   /* Devolve o resultado de list_add */
-	return list_add(list, entry);
+	return result;
 }
 
 
