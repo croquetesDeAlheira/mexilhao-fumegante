@@ -27,7 +27,7 @@ int key_hash(char *key, int l){
 		soma = soma + key[keySize-2] + key[keySize-1];
 	}
 
-  return soma % l;
+  	return soma % l;
 }
 
 /** Função para criar/inicializar uma nova tabela hash, com n  
