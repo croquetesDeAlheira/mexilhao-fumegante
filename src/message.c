@@ -38,6 +38,10 @@ int message_to_buffer(struct message_t *msg, char **msg_buf){
 	if(msg == NULL){ return  ERROR; }
 
 	int vetorSize = _SHORT + _SHORT; //comeca sempre 2 shorts.
+	uint16_t short_value;
+	uint32_t int_value;
+	short keySize;
+	short strSize;
 
 	/* Consoante o msg->c_type, determinar o tamanho do vetor de bytes
 	que tem de ser alocado antes de serializar msg
@@ -55,7 +59,7 @@ int message_to_buffer(struct message_t *msg, char **msg_buf){
 			break;
 
 		case CT_KEY :
-			int keySize = strlen(msg->content.key);
+			keySize = strlen(msg->content.key);
 			vetorSize += _SHORT + keySize;
 			break;
 
@@ -63,18 +67,20 @@ int message_to_buffer(struct message_t *msg, char **msg_buf){
 			vetorSize += _INT; //numKeys
 			char **keys = msg->content.keys;
 			int i = 0;
-			while(keys != NULL){
-			int strSize = strlen(keys + i);
-			vetorSize += _SHORT + strSize;
+			while(*(keys + i) != NULL){
+				strSize = strlen(*(keys + i);
+				vetorSize += _SHORT + strSize;
+				i++;
 			}
 			break;
 
 		case CT_ENTRY :
 			vetorSize += _SHORT; //keysize
-			int keySize = strlen(msg->content.entry->key);
+			keySize = strlen(msg->content.entry->key);
 			vetorSize += keySize; //Tamanho da key
 			vetorSize += iSize; //tamanho data
 			int dataSize += msg->content.entry->value->datasize;
+			vetorSize += (short)dataSize; //int -> short
 			break;
 
 		default:
@@ -91,50 +97,52 @@ int message_to_buffer(struct message_t *msg, char **msg_buf){
 	/* Inicializar ponteiro auxiliar com o endereço da memória alocada */
 	char *ptr = *msg_buf;
 
-	uint16_t short_value = htons(msg->opcode);
+	short_value = htons(msg->opcode);
 	memcpy(ptr, &short_value, _SHORT);
 	ptr += _SHORT;
 
-	uint16_t short_value = htons(msg->c_type);
+	short_value = htons(msg->c_type);
 	memcpy(ptr, &short_value, _SHORT);
 	ptr += _SHORT;
 
 	switch(type){
 		case CT_RESULT :
-			vetorSize += _INT; // + 4 bytes do result
+			int_value = htonl(msg->content.result);
+			memcpy(ptr, &int_value, _INT);
+			ptr += _INT;
 			break;
 
 		case CT_VALUE :
-			vetorSize += _INT; // datasize int
-			//soma o valor do datasize
-			vertorSize += msg->content.data->datasize;
+
 			break;
 
 		case CT_KEY :
-			int keySize = strlen(msg->content.key);
-			vetorSize += _SHORT + keySize;
+			strSize = strlen(msg->content.key); //supondo q retorna short
+			short_value = htons(strSize);
+			memcpy(ptr, &short_value, _SHORT);
+			ptr += _SHORT;
+			memcpy(ptr, msg->content.key , strSize); //sem o \0
+			ptr += strSize;
 			break;
 
 		case CT_KEYS :
-			vetorSize += _INT; //numKeys
 			char **keys = msg->content.keys;
-			int i = 0;
+			int j = 0;
 			while(keys != NULL){
-			int strSize = strlen(keys + i);
-			vetorSize += _SHORT + strSize;
+				strSize = strlen(*(keys + j));
+				short_value = htons(strSize);
+				memcpy(ptr, &short_value, _SHORT);
+				ptr += _SHORT;
+				memcpy(ptr,(keys + j), strSize);
+				ptr += strSize;
+				j++;
 			}
 			break;
 
 		case CT_ENTRY :
-			vetorSize += _SHORT; //keysize
-			int keySize = strlen(msg->content.entry->key);
-			vetorSize += keySize; //Tamanho da key
-			vetorSize += iSize; //tamanho data
-			int dataSize += msg->content.entry->value->datasize;
+
 			break;
 	}
-
-
 
 	/* Consoante o conteúdo da mensagem, continuar a serialização da mesma */
 
