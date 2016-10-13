@@ -15,7 +15,11 @@ const int EQUALS =0;
 const int _SHORT = 2; //tamanho short
 const int _INT = 4; //tamanho inteiro
 
-
+#define CT_RESULT	10
+#define CT_VALUE	20
+#define CT_KEY		30
+#define CT_KEYS		40
+#define CT_ENTRY	50
 
 void free_message(struct message_t *msg){
 
