@@ -21,7 +21,7 @@ int key_hash(char *key, int l){
 	if(key == NULL){return NULL;}
   /* l tem valor válido? */
 	if(l < 0){return NULL;}
-	int soma, keySize, ind;
+	int soma=0, keySize, ind;
 	if((keySize = strlen(key)) < 6){
 		for(ind = 0; ind < keySize; ind++)
 			soma+=key[ind];
