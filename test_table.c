@@ -282,6 +282,7 @@ int testTableDestroy(){
  	table_destroy(table);
 
  	printf(" %s\n", result ? "passou" : "não passou");
+
  	return result;
  }
 
@@ -309,5 +310,4 @@ int main() {
 	printf("Resultados do teste do módulo table: %d em 8\n\n", score);
 
 	return score;
-
 }
