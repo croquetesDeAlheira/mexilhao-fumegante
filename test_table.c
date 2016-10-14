@@ -274,7 +274,7 @@ int testTableDestroy(){
  		result = (result && achou);
  	}
 
- 	result = result; //&&
+ 	result = result &&
  		 (table_size(table) == i);
 
  	table_free_keys(keys);
@@ -282,6 +282,7 @@ int testTableDestroy(){
  	table_destroy(table);
 
  	printf(" %s\n", result ? "passou" : "não passou");
+
 
  	return result;
  }
@@ -310,4 +311,5 @@ int main() {
 	printf("Resultados do teste do módulo table: %d em 8\n\n", score);
 
 	return score;
+
 }

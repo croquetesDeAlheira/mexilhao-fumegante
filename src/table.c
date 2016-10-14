@@ -33,23 +33,27 @@ int key_hash(char *key, int l){
  * linhas(n = módulo da função hash)
  */
 struct table_t *table_create(int n) {
-  /* n tem valor válido? */
+    /* n tem valor válido? */
 	if (n <= 0) { return NULL; }
 
-  /* Alocar memória para struct table_t */
+    /* Alocar memória para struct table_t */
 	struct table_t *new_table = (struct table_t *) malloc(sizeof(struct table_t));
 	if (new_table == NULL) { return NULL; } //verifica se not null
-  /* Alocar memória para array de listas com n entradas 
-     que ficará referenciado na struct table_t alocada.*/ 
+    /* Alocar memória para array de listas com n entradas 
+       que ficará referenciado na struct table_t alocada.*/ 
 	new_table->tabela = (struct list_t **)malloc(n * sizeof(struct list_t*));
 	if (new_table->tabela == NULL) { 
-		return NULL; 
 		free(new_table);
+		return NULL; 
 	}
+
+	// Inicializa restantes atributos
+	new_table->size = n;
+	new_table->nElems = 0;
   	
-  /* Inicializar listas.
-     Inicializar atributos da tabela.
-  */
+    /* Inicializar listas.
+       Inicializar atributos da tabela.
+    */
 	int i;
 	for (i = 0; i < n; i++) {
 		struct list_t *list = list_create();
@@ -58,15 +62,13 @@ struct table_t *table_create(int n) {
 			// Ex: erro em new_table->tabela[2] = list;
 			// Tem de libertas new_table->tabela[1] e new_table->tabela[0]
 			// Chama o table_destroy passando o table criado
+			//table_destroy(new_table);
 			table_destroy(new_table);
 			return NULL; 
 		}
 		// Aloca um novo apontador de lista a cada linha da tabela
 		new_table->tabela[i] = list;
 	}
-	// Inicializa restantes atributos
-	new_table->size = n;
-	new_table->nElems = 0;
 	return new_table;
 }
 
@@ -84,9 +86,9 @@ void table_destroy(struct table_t *table) {
 	int i;
 	for (i = 0; i < table->size; i++) {
 		list = table->tabela[i];
-		// Verifica se alguma linha está a NULL
-		if (list != NULL) { list_destroy(list); }
+		list_destroy(list);
 	}
+	free(table->tabela);
 	// Liberta a tabela
 	free(table);
 }
@@ -97,12 +99,17 @@ void table_destroy(struct table_t *table) {
  * Devolve 0 (ok) ou -1 (out of memory, outros erros)
  */
 int table_put(struct table_t *table, char *key, struct data_t *value) {
+  struct data_t *data;
   int result;
   // Verifica value...Restante verificado pelo table_get
   if (value == NULL) {return ERROR; }
   // Verifica se já existe na tabela um par {chave, valor}
   // Se True então não faz o put e sai
-  if (table_get(table, key) != NULL) { return ERROR; }
+  data = table_get(table, key);
+  if (data != NULL) { 
+  	data_destroy(data);
+  	return ERROR; 
+  }
 
   result = insert(table, key, value);
 
@@ -116,13 +123,18 @@ int table_put(struct table_t *table, char *key, struct data_t *value) {
  * Devolve 0 (OK) ou -1 (out of memory, outros erros)
  */
 int table_update(struct table_t *table, char *key, struct data_t *value) {
+	struct data_t *data;
+	int result;
 	// Verifica value...Restante verificado pelo table_get
 	if (value == NULL) { return ERROR; }
 	// Verifica se ja existe na tabela um par {chave, valor}
 	// Se isso for FALSE então NÂO faz update
-	if (table_get(table, key) == NULL) { return ERROR; }
+	data = table_get(table, key);
+	if (data == NULL) { return ERROR; }
 
-	return insert(table, key, value);
+	result = insert(table, key, value);
+	data_destroy(data);
+	return result;
 }
 
 
@@ -180,7 +192,7 @@ char **table_get_keys(struct table_t *table) {
 	char **all_keys;
 	char **keys_by_line;
 	struct list_t **p_tab;
-	int index, count_keys, index_lines, j;
+	int i, count_keys, j;
 	struct list_t *list;
 	
 	// Verifica tabela
@@ -192,32 +204,34 @@ char **table_get_keys(struct table_t *table) {
 
 	// Percorrendo a lista e passando os valores
 	p_tab = table->tabela; // Tabela hash
-	index = 0; // Indice da tabela hash
+	i = 0; // Indice da tabela hash
 	count_keys = 0; // indice **char keys: no final count_keys = table->nElems
 	j = 0;
-	while (index < table->size) {
+	for (i = 0; i < table->size; i++) {
 		// Lista a considerar
-		list = p_tab[index];
+		list = p_tab[i];
 		// Chaves da lista considerada
 		keys_by_line = list_get_keys(list);
 		if (keys_by_line == NULL) { 
 			// Caso haja erro apaga
 			// O que já foi feito e introduzido no all_keys
-			list_free_keys(all_keys); 
+			list_free_keys(all_keys);
 			return NULL; 
 		}
 		// Copia as chaves que existe na linha da tabela hash
 		while(keys_by_line[j] != NULL) {
 			all_keys[count_keys] = strdup(keys_by_line[j]);
 			if (all_keys[count_keys] == NULL) {
+				list_free_keys(keys_by_line);
 				list_free_keys(all_keys);
 				return NULL;
 			}
 			count_keys++;
 			j++;
 		}
-		// Passa para a proxima linha
-		index++;
+		list_free_keys(keys_by_line);
+		// Faz reset a j
+		j = 0;
 	}
 
 	// Ultimo elemento de all_keys tem de vir a NULL

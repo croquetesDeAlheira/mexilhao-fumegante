@@ -5,6 +5,7 @@ Luís Costa 47082
 Marcus Dias 44901
 */
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "../include/data.h"
@@ -42,19 +43,11 @@ struct data_t *data_create2(int size, void *data) {
   if (size <= 0 || data == NULL)
     return NULL;
   // Apontador data_t de memória dinamica
-  struct data_t *p = (struct data_t*)malloc(sizeof(struct data_t));
+  struct data_t *p = data_create(size);
   // Verifica a criação do apontador
-  if (p == NULL)
-    return NULL;
-  // Alocar memória para o atributo p->data
-  p->data = malloc(size);
-  // Verifica a criação do apontador
-  if (p->data == NULL) {
-    free(p);
+  if (p == NULL) {
     return NULL;
   }
-  // Inicializando do atributo datasize
-  p->datasize = size;
   // Copia o centeudo 
   memcpy(p->data, data, size);
   return p;
@@ -64,19 +57,18 @@ struct data_t *data_create2(int size, void *data) {
  */
 void data_destroy(struct data_t *data) {
   // Libertando espaço na memoria dinamica
-  if(data == NULL){
-  	return;
+  if (data != NULL) {
+    free(data->data);
+    free(data);
   }
-  free(data->data);
-  free(data);
+
 }
 
 /* Função que duplica uma estrutura data_t.
  */
 struct data_t *data_dup(struct data_t *data) {
-	if(data == NULL || data->data == NULL || data->datasize <= 0){
-		return NULL;
-	}
+  if (data == NULL || data->data == NULL)
+    return NULL;
   // Tamanho do atributo datasize
   int size = data->datasize;
   // Apontador data_t de memoria dinamica
