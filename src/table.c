@@ -5,10 +5,8 @@
 #include "../include/table-private.h"
 
 //constants
-const int OK = 0;
-const int ERROR = -1;
-const int NOTHING_CHANGED = 1;
-const int EQUALS = 0;
+#define ERROR -1
+#define OK 0
 
 int key_hash(char *key, int l){
 
@@ -181,8 +179,8 @@ int table_size(struct table_t *table) {
 char **table_get_keys(struct table_t *table) {
 	char **all_keys;
 	char **keys_by_line;
+	struct list_t **p_tab;
 	int index, count_keys;
-	struct table_t *h_table;
 	struct list_t *list;
 	
 	// Verifica tabela
@@ -193,25 +191,25 @@ char **table_get_keys(struct table_t *table) {
 	if (all_keys == NULL) { return NULL; }
 
 	// Percorrendo a lista e passando os valores
-	h_table = table->tabela; // Tabela hash
+	p_tab = table->tabela; // Tabela hash
 	index = 0; // Indice da tabela hash
 	count_keys = 0; // indice **char keys: no final count_keys = table->nElems
 	
 	while (count_keys < table->nElems) {
 		// Lista a considerar
-		list = h_table[index];
+		list = p_tab[index];
 		// Chaves da lista considerada
 		keys_by_line = list_get_keys(list);
 		if (keys_by_line == NULL) { 
 			// Caso haja erro apaga
-			// O que já foi feito introduzido no all_keys
+			// O que já foi feito e introduzido no all_keys
 			list_free_keys(all_keys); 
 			return NULL; 
 		}
 
 		// Copia as chaves que existe na linha da tabela hash
 		while(keys_by_line != NULL) {
-			all_keys[count_keys] = strdup(keys_by_line);
+			all_keys[count_keys] = strdup(keys_by_line[0]);
 			if (all_keys[count_keys] == NULL) {
 				list_free_keys(all_keys);
 				return NULL;
