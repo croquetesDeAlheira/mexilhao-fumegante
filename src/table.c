@@ -180,7 +180,7 @@ char **table_get_keys(struct table_t *table) {
 	char **all_keys;
 	char **keys_by_line;
 	struct list_t **p_tab;
-	int index, count_keys;
+	int index, count_keys, index_lines, j;
 	struct list_t *list;
 	
 	// Verifica tabela
@@ -194,8 +194,8 @@ char **table_get_keys(struct table_t *table) {
 	p_tab = table->tabela; // Tabela hash
 	index = 0; // Indice da tabela hash
 	count_keys = 0; // indice **char keys: no final count_keys = table->nElems
-	
-	while (count_keys < table->nElems) {
+	j = 0;
+	while (index < table->size) {
 		// Lista a considerar
 		list = p_tab[index];
 		// Chaves da lista considerada
@@ -206,16 +206,15 @@ char **table_get_keys(struct table_t *table) {
 			list_free_keys(all_keys); 
 			return NULL; 
 		}
-
 		// Copia as chaves que existe na linha da tabela hash
-		while(keys_by_line != NULL) {
-			all_keys[count_keys] = strdup(keys_by_line[0]);
+		while(keys_by_line[j] != NULL) {
+			all_keys[count_keys] = strdup(keys_by_line[j]);
 			if (all_keys[count_keys] == NULL) {
 				list_free_keys(all_keys);
 				return NULL;
 			}
 			count_keys++;
-			keys_by_line++;
+			j++;
 		}
 		// Passa para a proxima linha
 		index++;

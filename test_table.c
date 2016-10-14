@@ -274,7 +274,7 @@ int testTableDestroy(){
  		result = (result && achou);
  	}
 
- 	result = result &&
+ 	result = result; //&&
  		 (table_size(table) == i);
 
  	table_free_keys(keys);
