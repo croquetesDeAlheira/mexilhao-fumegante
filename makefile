@@ -12,16 +12,16 @@ CFLAGS = -I include
 #OBJFILES_DATA = $(OBJ)/data.o $(OBJ)/entry.o $(OBJ)/list.o $(OBJ)/test_data.o
 #OBJFILES_ENTRY = $(OBJ)/data.o $(OBJ)/entry.o $(OBJ)/list.o $(OBJ)/test_entry.o
 #OBJFILES_LIST = $(OBJ)/data.o $(OBJ)/entry.o $(OBJ)/list.o $(OBJ)/test_list.o
-OBJFILES_TABLE = $(OBJ)/data.o $(OBJ)/entry.o $(OBJ)/list.o $(OBJ)/table.o $(OBJ)/test_table.o 
-#OBJFILES_MESSAGE = $(OBJ)/data.o $(OBJ)/entry.o $(OBJ)/list.o $(OBJ)/test_message.o
+#OBJFILES_TABLE = $(OBJ)/data.o $(OBJ)/entry.o $(OBJ)/list.o $(OBJ)/table.o $(OBJ)/test_table.o 
+OBJFILES_MESSAGE = $(OBJ)/data.o $(OBJ)/entry.o $(OBJ)/list.o $(OBJ)/test_message.o
 
 #all: test_list test_entry test_data
 
-#test_message: $(OBJFILES_MESSAGE)
-#	gcc -o test_message $(OBJFILES_MESSAGE)
+test_message: $(OBJFILES_MESSAGE)
+	gcc -o test_message $(OBJFILES_MESSAGE)
 
-test_table: $(OBJFILES_TABLE)
-	gcc -o test_table $(OBJFILES_TABLE)
+#test_table: $(OBJFILES_TABLE)
+#	gcc -o test_table $(OBJFILES_TABLE)
 
 #test_list: $(OBJFILES_LIST)
 #	gcc -o test_list $(OBJFILES_LIST)
@@ -32,11 +32,11 @@ test_table: $(OBJFILES_TABLE)
 #test_data: $(OBJFILES_DATA)
 #	gcc -o test_data $(OBJFILES_DATA)
 
-#$(OBJ)/test_message.o: test_message.c $(INC)/message-private.h
-#	gcc $(CFLAGS) -c test_message.c -o $(OBJ)/test_message.o
+$(OBJ)/test_message.o: test_message.c $(INC)/message-private.h
+	gcc $(CFLAGS) -c test_message.c -o $(OBJ)/test_message.o
 	
-$(OBJ)/test_table.o: test_table.c $(INC)/data.h $(INC)/entry.h $(INC)/table-private.h 
-	gcc $(CFLAGS) -c test_table.c -o $(OBJ)/test_table.o
+#$(OBJ)/test_table.o: test_table.c $(INC)/data.h $(INC)/entry.h $(INC)/table-private.h 
+#	gcc $(CFLAGS) -c test_table.c -o $(OBJ)/test_table.o
 
 #$(OBJ)/test_list.o: test_list.c $(INC)/list-private.h
 #	gcc $(CFLAGS) -c test_list.c -o $(OBJ)/test_list.o	
@@ -47,8 +47,8 @@ $(OBJ)/test_table.o: test_table.c $(INC)/data.h $(INC)/entry.h $(INC)/table-priv
 #$(OBJ)/test_data.o: test_data.c $(INC)/data.h
 #	gcc $(CFLAGS) -c test_data.c -o $(OBJ)/test_data.o
 
-#$(OBJ)/message.o: $(SRC)/message.c $(INC)/message.h $(INC)/message-private.h
-#	gcc -c $(SRC)/message.c -o $(OBJ)/message.o
+$(OBJ)/message.o: $(SRC)/message.c $(INC)/message.h $(INC)/message-private.h
+	gcc -c $(SRC)/message.c -o $(OBJ)/message.o
 
 $(OBJ)/table.o: $(SRC)/table.c $(INC)/table.h $(INC)/table-private.h
 	gcc -c $(SRC)/table.c -o $(OBJ)/table.o

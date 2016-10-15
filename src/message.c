@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <arpa/inet.h>
 
-#include "message-private.h"
+#include "../include/message-private.h"
 
 
 //constants

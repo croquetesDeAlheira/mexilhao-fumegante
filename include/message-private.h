@@ -4,7 +4,7 @@
 #define _SHORT = 2; //tamanho short
 #define _INT = 4; //tamanho inteiro
 
-#include "table-private.h" /* For table_free_keys() */
+//#include "table-private.h" /* For table_free_keys() */
 #include "message.h"
 #include "data.h"
 
