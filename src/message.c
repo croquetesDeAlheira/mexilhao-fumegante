@@ -238,9 +238,9 @@ struct message_t *buffer_to_message(char *msg_buf, int msg_size){
 					memcpy(&short_aux, msg_buf, _SHORT);
 					strSize = htons(short_aux);
 					msg_buf += _SHORT;
-					(keys + i) = (char *)malloc(strSize +1);
+					*(keys + i) = (char *)malloc(strSize +1);
 					memcpy((keys + i), msg_buf, strSize);
-					((keys + i) + strSize) = '\0';
+					*((keys + i) + strSize) = '\0';
 					msg_buf += strSize;
 				}
 				msg->content.keys = keys;
@@ -252,7 +252,7 @@ struct message_t *buffer_to_message(char *msg_buf, int msg_size){
 				msg_buf += _SHORT;
 				char *key = (char *)malloc(strSize + 1);
 				memcpy(key, msg_buf, strSize);
-				(key+strlen)= '\0';
+				*(key + strlen(key))= '\0';
 				msg_buf += strSize;
 				memcpy(&int_aux, msg_buf, _INT);
 				dataSize = ntohl(int_aux);
