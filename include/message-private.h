@@ -8,4 +8,17 @@
 #include "message.h"
 #include "data.h"
 
+
+/*
+*	verifica se um dado opcode eh valido
+*	@return 1 se sim, senao 0
+*/
+int opIsValid(short opcode);
+
+/*
+*	verifica se um dado c_type eh valido
+*	@return 1 se sim, senao 0
+*/
+int ctIsValid(short c_type);
+
 #endif
