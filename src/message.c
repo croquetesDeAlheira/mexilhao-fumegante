@@ -129,6 +129,7 @@ int message_to_buffer(struct message_t *msg, char **msg_buf){
 	switch(type){
 		case CT_RESULT :
 			int_value = htonl(msg->content.result);
+			printf("value int = %d\n", msg->content.result );
 			memcpy(ptr, &int_value, _INT);
 			ptr += _INT;
 			break;
