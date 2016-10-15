@@ -32,7 +32,7 @@ int message_to_buffer(struct message_t *msg, char **msg_buf){
 	/* Verificar se msg é NULL */
 	if(msg == NULL){ return  ERROR; }
 
-	int vetorSize = _SHORT + _SHORT; //comeca sempre 2 shorts.
+	int vetorSize =(_SHORT + _SHORT); //comeca sempre 2 shorts.
 	uint16_t short_value;
 	uint32_t int_value;
 	short keySize;
@@ -51,7 +51,7 @@ int message_to_buffer(struct message_t *msg, char **msg_buf){
 		case CT_VALUE :
 			vetorSize += _INT; // datasize int
 			//soma o valor do datasize
-			vertorSize += msg->content.data->datasize;
+			vetorSize += msg->content.data->datasize;
 			break;
 
 		case CT_KEY :
@@ -64,7 +64,7 @@ int message_to_buffer(struct message_t *msg, char **msg_buf){
 			char **keys = msg->content.keys;
 			int i = 0;
 			while(*(keys + i) != NULL){
-				strSize = strlen(*(keys + i);
+				strSize = strlen(*(keys + i));
 				vetorSize += _SHORT + strSize;
 				i++;
 			}
@@ -74,9 +74,9 @@ int message_to_buffer(struct message_t *msg, char **msg_buf){
 			vetorSize += _SHORT; //keysize
 			keySize = strlen(msg->content.entry->key);
 			vetorSize += keySize; //Tamanho da key
-			vetorSize += iSize; //tamanho data
+			vetorSize += _INT //tamanho data
 			int dataSize += msg->content.entry->value->datasize;
-			vetorSize += (short)dataSize; //int -> short
+			vetorSize += dataSize; //tamanho da mem do data
 			break;
 
 		default:
@@ -111,11 +111,11 @@ int message_to_buffer(struct message_t *msg, char **msg_buf){
 			break;
 
 		case CT_VALUE :
-			int_dataSize = msg->content.data->datasize;
+			dataSize = msg->content.data->datasize;
 			int_value = htonl(int_dataSize);
 			memcpy(ptr, &int_value, _INT);
 			ptr += _INT;
-			memcpy(ptr, &msg->content.data->data, int_dataSize);
+			memcpy(ptr, &msg->content.data->data, dataSize);
 			ptr += int_dataSize;
 			break;
 
