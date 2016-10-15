@@ -107,10 +107,14 @@ int message_to_buffer(struct message_t *msg, char **msg_buf){
 	/* Alocar quantidade de memória determinada antes 
 	*msg_buf = ....
 	*/
+	printf("vetorSize = %d\n",vetorSize);
+	printf("alloc memom\n");
+
 	msg_buf = (char **)malloc(vetorSize); 
 
 	/* Inicializar ponteiro auxiliar com o endereço da memória alocada */
-	char *ptr = *msg_buf;
+	char *ptr = msg_buf;
+	printf("done allokin\n");
 
 	short_value = htons(msg->opcode);
 	memcpy(ptr, &short_value, _SHORT);
@@ -119,7 +123,7 @@ int message_to_buffer(struct message_t *msg, char **msg_buf){
 	short_value = htons(msg->c_type);
 	memcpy(ptr, &short_value, _SHORT);
 	ptr += _SHORT;
-
+	printf("done opvalue and c_type\n");
 	/* Consoante o conteúdo da mensagem, continuar a serialização da mesma */
 
 	switch(type){
