@@ -9,11 +9,11 @@
 #define OK 0
 
 int key_hash(char *key, int l){
-
+	//nao eh necessario, todo sition onde key hash é chamada , a verificacao ja foi feita.
   /* Verificar se key é NULL */
-	if(key == NULL){ return; }
+	//if(key == NULL){ return; }
   /* l tem valor válido? */
-	if(l < 0){ return; }
+	//if(l < 0){ return; }
 
 	int soma=0, keySize, ind;
 	if((keySize = strlen(key)) < 6){
