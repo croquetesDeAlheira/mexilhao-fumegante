@@ -204,7 +204,6 @@ char **table_get_keys(struct table_t *table) {
 
 	// Percorrendo a lista e passando os valores
 	p_tab = table->tabela; // Tabela hash
-	i = 0; // Indice da tabela hash
 	count_keys = 0; // indice **char keys: no final count_keys = table->nElems
 	j = 0;
 	for (i = 0; i < table->size; i++) {
