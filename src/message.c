@@ -13,17 +13,15 @@ const int ERROR = -1;
 
 
 void free_message(struct message_t *msg){
-	printf("starting free message\n");
+	/* Verificar se msg é NULL */
+		if(msg == NULL){ return; }
 
-/* Verificar se msg é NULL */
-	if(msg == NULL){ return; }
-
-/* Se msg->c_type for:
-VALOR, libertar msg->content.data
-ENTRY, libertar msg->content.entry_create
-CHAVES, libertar msg->content.keys
-CHAVE, libertar msg->content.key
-*/
+	/* Se msg->c_type for:
+	VALOR, libertar msg->content.data
+	ENTRY, libertar msg->content.entry_create
+	CHAVES, libertar msg->content.keys
+	CHAVE, libertar msg->content.key
+	*/
 	int type = msg->c_type;
 	switch(type){
 		case CT_VALUE:
@@ -42,8 +40,7 @@ CHAVE, libertar msg->content.key
 			return;
 	}
 	free(msg);
-/* libertar msg */
-
+	/* libertar msg */
 }
 
 int message_to_buffer(struct message_t *msg, char **msg_buf){
@@ -58,6 +55,7 @@ int message_to_buffer(struct message_t *msg, char **msg_buf){
 	short strSize;
 	int dataSize;
 	char **keys;
+	int numKeys;
 
 	/* Consoante o msg->c_type, determinar o tamanho do vetor de bytes
 	que tem de ser alocado antes de serializar msg
@@ -88,6 +86,8 @@ int message_to_buffer(struct message_t *msg, char **msg_buf){
 				vetorSize += _SHORT + strSize;
 				i++;
 			}
+			//we need to know numKeys
+			numKeys = i;
 			break;
 
 		case CT_ENTRY :
@@ -108,38 +108,27 @@ int message_to_buffer(struct message_t *msg, char **msg_buf){
 	/* Alocar quantidade de memória determinada antes 
 	*msg_buf = ....
 	*/
-	printf("vetorSize = %d\n",vetorSize);
-	printf("alloc memom\n");
 
-	msg_buf = (char *)malloc(vetorSize);
+
+	*msg_buf = (char *)malloc(vetorSize);
 	if(msg_buf == NULL){return ERROR;}
 
 	/* Inicializar ponteiro auxiliar com o endereço da memória alocada */
-	char *ptr = (char *) msg_buf;
-	printf("prt %d\n", ptr );
-	printf("msg_buf %d\n", msg_buf );
-	printf("done allokin\n");
+	char *ptr = *msg_buf;
 
 	short_value = htons(msg->opcode);
 	memcpy(ptr, &short_value, _SHORT);
 	ptr += _SHORT;
-printf("prt %d\n", ptr );
 	short_value = htons(msg->c_type);
 	memcpy(ptr, &short_value, _SHORT);
 	ptr += _SHORT;
-	printf("prt %d\n", ptr );
-	printf("done opvalue and c_type\n");
 	/* Consoante o conteúdo da mensagem, continuar a serialização da mesma */
 
 	switch(type){
 		case CT_RESULT :
 			int_value = htonl(msg->content.result);
-			printf("value int = %d\n", msg->content.result );
 			memcpy(ptr, &int_value, _INT);
-			printf("mem is copied\n");
 			ptr += _INT;
-			printf("prt %d\n", ptr );
-			printf("after ptr\n");
 			break;
 
 		case CT_VALUE :
@@ -162,13 +151,17 @@ printf("prt %d\n", ptr );
 
 		case CT_KEYS :
 			keys = msg->content.keys;
+			int_value = htonl(numKeys);
+			memcpy(ptr, &int_value, _INT);
+			ptr += _INT;
 			int j = 0;
-			while(keys != NULL){
+			while(j < numKeys){
 				strSize = strlen(*(keys + j));
 				short_value = htons(strSize);
 				memcpy(ptr, &short_value, _SHORT);
 				ptr += _SHORT;
-				memcpy(ptr,(keys + j), strSize);
+				memcpy(ptr, *(keys + j), strSize);
+				printf("str to buff %s\n", *(keys + j));
 				ptr += strSize;
 				j++;
 			}
@@ -191,12 +184,10 @@ printf("prt %d\n", ptr );
 			break;
 	}
 
-	printf("after swtc %d\n", vetorSize);
 	return vetorSize;
 }
 
 struct message_t *buffer_to_message(char *msg_buf, int msg_size){
-	printf("start buffer to message\n");
 	/* Verificar se msg_buf é NULL */
 	/* msg_size tem tamanho mínimo ? */
 	if(msg_buf == NULL || msg_size < 6){ return NULL;}
@@ -269,8 +260,10 @@ struct message_t *buffer_to_message(char *msg_buf, int msg_size){
 					strSize = htons(short_aux);
 					msg_buf += _SHORT;
 					*(keys + i) = (char *)malloc(strSize +1);
-					memcpy((keys + i), msg_buf, strSize);
+					memcpy(*(keys + i), msg_buf, strSize);
+					printf("%d\n",strSize);
 					*((keys + i) + strSize) = '\0';
+					printf("%s\n", *(keys + i) );
 					msg_buf += strSize;
 				}
 				msg->content.keys = keys;

@@ -49,16 +49,11 @@ int testResult() {
 	msg->opcode = OC_PUT;
 	msg->c_type = CT_RESULT;
 	msg->content.result = 1;
-	printf("msg_str %d\n", msg_str );
 	size = message_to_buffer(msg, &msg_str);
-	printf("%d\n",  size);
-	printf("msg_str %d\n", msg_str );
+
 	opcode = htons(msg->opcode);
 	c_type = htons(msg->c_type);
 	res = htonl(msg->content.result);
-	printf("op %d\n", memcmp(msg_str, &opcode, 2) );
-		printf(" ct %d\n", memcmp(msg_str + 2, &c_type, 2) );
-			printf("int %d\n",memcmp(msg_str + 4, &res, 4));
 	result = memcmp(msg_str, &opcode, 2) == 0 &&
 		 memcmp(msg_str + 2, &c_type, 2) == 0 && 
 		 memcmp(msg_str + 4, &res, 4) == 0;
@@ -251,9 +246,7 @@ int testKeys() {
 	msg->content.keys[2] = strdup("teste");
 	msg->content.keys[3] = strdup("123");
 	msg->content.keys[4] = NULL;
-
 	size = message_to_buffer(msg, &msg_str);
-
 	opcode = htons(msg->opcode);
 	c_type = htons(msg->c_type);
 	num_keys = 4;
@@ -270,7 +263,7 @@ int testKeys() {
 		 memcmp(msg_str + 22, keys[2], strlen(keys[2])) == 0 &&
 		 memcmp(msg_str + 27, &sizes_conv[3], 2) == 0 &&
 		 memcmp(msg_str + 29, keys[3], strlen(keys[3])) == 0;
-
+		 printf("result %d\n", result);
 	free_message(msg);
 
 	msg = buffer_to_message(msg_str, size);
@@ -282,7 +275,7 @@ int testKeys() {
 			   strcmp(msg->content.keys[2], keys[2]) == 0 &&
 			   strcmp(msg->content.keys[3], keys[3]) == 0 &&
 			   msg->content.keys[4] == NULL;
-
+			    printf("result %d\n", result);
 	free(msg_str);
 	//print_message(msg);
 	free_message(msg);
@@ -301,7 +294,6 @@ int testInvalida() {
 	msg = buffer_to_message(msg_lixada1, strlen(msg_lixada1)+1);
 
 	result = (msg == NULL);
-
 	printf(" %s\n", result ? "passou" : "não passou");
 	return result;
 }
@@ -311,7 +303,7 @@ int main() {
 
 	printf("\nIniciando o teste do módulo message\n");
 
-	//score += testResult();
+	score += testResult();
 
 	score += testKey();
 
