@@ -48,6 +48,7 @@ int message_to_buffer(struct message_t *msg, char **msg_buf){
 	/* Verificar se msg é NULL */
 	if(msg == NULL){ return  ERROR; }
 
+	/* ::::: VARIAVEIS :::::*/
 	int vetorSize =(_SHORT + _SHORT); //comeca sempre 2 shorts.
 	uint16_t short_value;
 	uint32_t int_value;
@@ -67,26 +68,32 @@ int message_to_buffer(struct message_t *msg, char **msg_buf){
 			break;
 
 		case CT_VALUE :
-			vetorSize += _INT; // datasize int
-			//soma o valor do datasize
+			/* datasize int */
+			vetorSize += _INT; 
+			/* soma o valor do datasize */
 			vetorSize += msg->content.data->datasize;
 			break;
 
 		case CT_KEY :
+			/*  key size */
 			keySize = strlen(msg->content.key);
+			/* 2bytes + keysize  */
 			vetorSize += _SHORT + keySize;
 			break;
 
 		case CT_KEYS :
-			vetorSize += _INT; //numKeys
+			/*  num keys  */
+			vetorSize += _INT;
 			keys = msg->content.keys;
 			int i = 0;
 			while(*(keys + i) != NULL){
+				/* key size  */
 				strSize = strlen(*(keys + i));
+				/* 2bytes + keySize  */
 				vetorSize += _SHORT + strSize;
 				i++;
 			}
-			//we need to know numKeys
+			//we need to know numKeys later ;)
 			numKeys = i;
 			break;
 
@@ -108,35 +115,42 @@ int message_to_buffer(struct message_t *msg, char **msg_buf){
 	/* Alocar quantidade de memória determinada antes 
 	*msg_buf = ....
 	*/
-
-
 	*msg_buf = (char *)malloc(vetorSize);
 	if(msg_buf == NULL){return ERROR;}
 
 	/* Inicializar ponteiro auxiliar com o endereço da memória alocada */
 	char *ptr = *msg_buf;
 
+	/* serializa os 2 primeiros atributos
+	 * opcode primeiro
+	 * ct_type depois  */
 	short_value = htons(msg->opcode);
 	memcpy(ptr, &short_value, _SHORT);
 	ptr += _SHORT;
+	
 	short_value = htons(msg->c_type);
 	memcpy(ptr, &short_value, _SHORT);
 	ptr += _SHORT;
+	
 	/* Consoante o conteúdo da mensagem, continuar a serialização da mesma */
-
 	switch(type){
 		case CT_RESULT :
+			/* serializar result  */
+			/*  result eh 1 inteiro */
 			int_value = htonl(msg->content.result);
 			memcpy(ptr, &int_value, _INT);
 			ptr += _INT;
 			break;
 
 		case CT_VALUE :
+			/* serializar value tipo data_t  */
+			/* datasize , tamanho do data  */
 			dataSize = msg->content.data->datasize;
 			int_value = htonl(dataSize);
 			memcpy(ptr, &int_value, _INT);
 			ptr += _INT;
-			memcpy(ptr, &msg->content.data->data, dataSize);
+			/*  serializar o valor do data */
+			memcpy(ptr, msg->content.data->data, dataSize);
 			ptr += dataSize;
 			break;
 
@@ -198,7 +212,7 @@ struct message_t *buffer_to_message(char *msg_buf, int msg_size){
 	short strSize;
 	int dataSize;
 	int numKeys;
-	void *data;
+	void *dataBuff;
 	struct data_t *value;
 
 	/* Alocar memória para uma struct message_t */
@@ -228,17 +242,14 @@ struct message_t *buffer_to_message(char *msg_buf, int msg_size){
 				msg_buf += _INT;
 				break;
 			case CT_VALUE :
-				printf("buffer to msg : CTVALUE");
 				memcpy(&int_aux, msg_buf, _INT);
 				dataSize = ntohl(int_aux);
 				msg_buf += _INT;
-				printf("fez int %d\n" , dataSize);
-				data = malloc(dataSize);
-				if(data == NULL){ return NULL; }
-				memcpy(data, msg_buf, dataSize);
-				printf("data = %s\n", data);
+				dataBuff = (void *)malloc(dataSize);
+				if(dataBuff == NULL){ return NULL; }
+				memcpy(dataBuff, msg_buf, dataSize);
 				msg_buf += dataSize;
-				value = data_create2(dataSize, data);
+				value = data_create2(dataSize, dataBuff);
 				if(value == NULL){return NULL; }
 				msg->content.data = value;
 				break;
@@ -264,6 +275,7 @@ struct message_t *buffer_to_message(char *msg_buf, int msg_size){
 					msg_buf += _SHORT;
 					*(keys + i) = (char *)malloc(strSize +1);
 					aux = (char *)malloc(strSize + 1);
+					if(aux == NULL){return NULL;}
 					memcpy(aux, msg_buf, strSize);
 					aux[strSize] = '\0';
 					strcpy(*(keys + i), aux);
@@ -278,15 +290,16 @@ struct message_t *buffer_to_message(char *msg_buf, int msg_size){
 				strSize = ntohs(short_aux);
 				msg_buf += _SHORT;
 				char *key = (char *)malloc(strSize + 1);
+				if(key == NULL){return NULL; }
 				memcpy(key, msg_buf, strSize);
-				*(key + strlen(key))= '\0';
+				key[strSize] = '\0';
 				msg_buf += strSize;
 				memcpy(&int_aux, msg_buf, _INT);
 				dataSize = ntohl(int_aux);
 				msg_buf += _INT;
-				data = malloc(dataSize);
-				memcpy(data, msg_buf, dataSize);
-				value = data_create2(dataSize, data);
+				dataBuff = malloc(dataSize);
+				memcpy(dataBuff, msg_buf, dataSize);
+				value = data_create2(dataSize, dataBuff);
 				if(value == NULL){return NULL; }
 				struct entry_t *entry = entry_create(key, value);
 				if(entry == NULL){return NULL; }

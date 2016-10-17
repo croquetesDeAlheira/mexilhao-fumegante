@@ -145,7 +145,6 @@ int testValue() {
 		 memcmp(msg_str + 2, &c_type, 2) == 0 &&
 		 memcmp(msg_str + 4, &datasize_conv, 4) == 0 &&
 		 memcmp(msg_str + 8, &comp_data, datasize) == 0;
-printf("res = %d\n" , result);
 	free_message(msg);
 
 	msg = buffer_to_message(msg_str, size);
@@ -154,7 +153,6 @@ printf("res = %d\n" , result);
 			   msg->c_type == CT_VALUE &&
 			   msg->content.data->datasize == strlen("abc")+1 &&
 			   strcmp(msg->content.data->data,"abc") == 0;
-printf("res = %d\n" , result);
 	free(msg_str);
 	free(datastr);
 	//print_message(msg);
@@ -205,7 +203,6 @@ int testEntry() {
 		 memcmp(msg_str + 6, &comp_key, keysize) == 0 &&
 		 memcmp(msg_str + 6 + keysize, &datasize_conv, 4) == 0 &&
 		 memcmp(msg_str + 6 + keysize + 4, &comp_data, datasize) == 0;
-	printf("res = %d\n" , result);
 	free_message(msg);
 
 	msg = buffer_to_message(msg_str, size);
@@ -215,7 +212,6 @@ int testEntry() {
 			   strcmp(msg->content.entry->key, datastr) == 0 &&
 			   msg->content.entry->value->datasize == strlen(datastr) + 1 &&
 			   strcmp(msg->content.entry->value->data, datastr) == 0;
-printf("res = %d\n" , result);
 	free(msg_str);
 	free(datastr);
 
