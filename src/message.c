@@ -161,7 +161,6 @@ int message_to_buffer(struct message_t *msg, char **msg_buf){
 				memcpy(ptr, &short_value, _SHORT);
 				ptr += _SHORT;
 				memcpy(ptr, *(keys + j), strSize);
-				printf("str to buff %s\n", *(keys + j));
 				ptr += strSize;
 				j++;
 			}
@@ -229,15 +228,18 @@ struct message_t *buffer_to_message(char *msg_buf, int msg_size){
 				msg_buf += _INT;
 				break;
 			case CT_VALUE :
+				printf("buffer to msg : CTVALUE");
 				memcpy(&int_aux, msg_buf, _INT);
 				dataSize = ntohl(int_aux);
 				msg_buf += _INT;
+				printf("fez int %d\n" , dataSize);
 				data = malloc(dataSize);
-				if(data == NULL){return NULL; }
+				if(data == NULL){ return NULL; }
 				memcpy(data, msg_buf, dataSize);
+				printf("data = %s\n", data);
 				msg_buf += dataSize;
 				value = data_create2(dataSize, data);
-				if(value == NULL){ return NULL; }
+				if(value == NULL){return NULL; }
 				msg->content.data = value;
 				break;
 			case CT_KEY :
@@ -255,15 +257,17 @@ struct message_t *buffer_to_message(char *msg_buf, int msg_size){
 				msg_buf += _INT;
 				char **keys = (char **)malloc(sizeof(char *) * numKeys);
 				int i = 0;
+				char *aux;
 				for (i = 0; i < numKeys; i++){
 					memcpy(&short_aux, msg_buf, _SHORT);
 					strSize = htons(short_aux);
 					msg_buf += _SHORT;
 					*(keys + i) = (char *)malloc(strSize +1);
-					memcpy(*(keys + i), msg_buf, strSize);
-					printf("%d\n",strSize);
-					*((keys + i) + strSize) = '\0';
-					printf("%s\n", *(keys + i) );
+					aux = (char *)malloc(strSize + 1);
+					memcpy(aux, msg_buf, strSize);
+					aux[strSize] = '\0';
+					strcpy(*(keys + i), aux);
+					free(aux);
 					msg_buf += strSize;
 				}
 				msg->content.keys = keys;
