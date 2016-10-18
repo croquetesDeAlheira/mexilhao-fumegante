@@ -24,6 +24,9 @@ void free_message(struct message_t *msg){
 	*/
 	int type = msg->c_type;
 	switch(type){
+		case CT_RESULT :
+			//empty 
+			break;
 		case CT_VALUE:
 			data_destroy(msg->content.data);
 			break;
@@ -36,8 +39,6 @@ void free_message(struct message_t *msg){
 		case CT_ENTRY:
 			entry_destroy(msg->content.entry);
 			break;
-		default:
-			return;
 	}
 	free(msg);
 	/* libertar msg */
@@ -250,6 +251,7 @@ struct message_t *buffer_to_message(char *msg_buf, int msg_size){
 				memcpy(dataBuff, msg_buf, dataSize);
 				msg_buf += dataSize;
 				value = data_create2(dataSize, dataBuff);
+				free(dataBuff);
 				if(value == NULL){return NULL; }
 				msg->content.data = value;
 				break;
@@ -303,6 +305,9 @@ struct message_t *buffer_to_message(char *msg_buf, int msg_size){
 				if(value == NULL){return NULL; }
 				struct entry_t *entry = entry_create(key, value);
 				if(entry == NULL){return NULL; }
+				data_destroy(value);
+				free(dataBuff);
+				free(key);
 				msg->content.entry = entry;
 				break;
 			
@@ -311,6 +316,7 @@ struct message_t *buffer_to_message(char *msg_buf, int msg_size){
 
 		}
 	}else{
+		free(msg);
 		return NULL;
 	}
 
