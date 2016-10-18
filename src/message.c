@@ -1,3 +1,11 @@
+
+/*
+*		Grupo 12
+* @author Daniel Santos 44887
+* @author Luis Barros  47082
+* @author Marcus Dias 44901
+*/
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>

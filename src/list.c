@@ -1,8 +1,8 @@
 /*
-Grupo 12
-Daniel Santos
-Luís Costa 47082
-Marcus Dias
+*		Grupo 12
+* @author Daniel Santos 44887
+* @author Luis Barros  47082
+* @author Marcus Dias 44901
 */
 
 #include <stdlib.h>
