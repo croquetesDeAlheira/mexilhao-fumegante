@@ -39,7 +39,7 @@ struct message_t *network_send_receive(struct server_t *server, struct message_t
 	/* Verificar parâmetros de entrada */
 
 	/* Serializar a mensagem recebida */
-	message_size = message_to_buffer(msg, &message_out));
+	message_size = message_to_buffer(msg, &message_out);
 
 	/* Verificar se a serialização teve sucesso */
 
@@ -87,3 +87,16 @@ int network_close(struct server_t *server){
 	/* Libertar memória */
 }
 
+/* Função que garante o envio de len bytes armazenados em buf,
+   através da socket sock.
+*/
+int write_all(int sock, char *buf, int len){
+
+}
+
+/* Função que garante a receção de len bytes através da socket sock,
+   armazenando-os em buf.
+*/
+int read_all(int sock, char *buf, int len){
+
+}

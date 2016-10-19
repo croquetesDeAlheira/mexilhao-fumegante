@@ -82,7 +82,7 @@ int main(int argc, char **argv){
 					case "get:
 						break;
 
-					case "updade" :
+					case "update" :
 						break;
 					
 					case "del" :
@@ -92,7 +92,8 @@ int main(int argc, char **argv){
 						break;
 
 					default :
-						stip = 1;
+						printf("O comando inserido (%s) nao existe\n", token);
+						//stop = 1;
 						break;
 							
 				}
