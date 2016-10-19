@@ -57,6 +57,8 @@ char ** getTokens (char* token) {
 
 	// Calloc inicializa a NULL os nao atribuidos
 	tokens = (char**)calloc(3, sizeof(char*));
+	if (tokens == NULL) { return NULL; }
+	// Le o próximo token
 	token = strtok(NULL, space);
 	
 	i = 0;
@@ -65,7 +67,6 @@ char ** getTokens (char* token) {
 		token = strtok(NULL, space);
 		i++;
 	}
-
 	return tokens;
 }
 
@@ -130,6 +131,9 @@ int main(int argc, char **argv){
 
 			// Sigla do comando para poder correr o switch
 			sigla = keyfromstring(token);
+			// Inicializa a mensagem
+			msg_out = (struct message_t*)malloc(sizeof(struct message_t));
+			if (msg_out == NULL) { break; } // Salta o ciclo
 
 			switch(sigla) {
 				case BADKEY :
