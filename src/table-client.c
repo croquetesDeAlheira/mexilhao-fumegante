@@ -7,27 +7,33 @@
 	Exemplo de uso: ./table_client 10.101.148.144:54321
 */
 
-#include "stdio.h"
-#include "network_client-private.h"
+#include <string.h>
+#include <stdio.h>
+
+#include "../inc/network_client-private.h"
 
 int main(int argc, char **argv){
 	struct server_t *server;
 	char input[81];
 	struct message_t *msg_out, *msg_resposta;
+	// Luis	
 	int i;
-	int stop = 0;
-	char *command, ip, port;
+	int stop;
+	char *command; 
+	char *token;
+	const char space[2] = " ";
 
 	/* Testar os argumentos de entrada */
 	// Luis
-	if (argc < 1 || argv == NULL) { return NULL; }
+	if (argc < 1 || argv == NULL) { return 0; }
  	// Luis
 	for (i = 0; i < argc; i++)
-		if (argv[i] == NULL) { return NULL; }
+		if (argv[i] == NULL) { return 0; }
 
-	/* Usar network_connect para estabelcer ligação ao servidor */
+	/* Usar network_connect para estabelecer ligação ao servidor */
 	server = network_connect(/* */);
-
+	// Luis	
+	stop = 0;
 	/* Fazer ciclo até que o utilizador resolva fazer "quit" */
  	while (stop == 0){ // Condicao do while luis
 
@@ -43,7 +49,6 @@ int main(int argc, char **argv){
 		fgets(input,80,stdin);
 
 		// Retirar o caracter \n
-		i = 0;
 		command = input;
 		while (*command != '\n') { command++; }
 		// Actualiza
@@ -53,20 +58,44 @@ int main(int argc, char **argv){
 		/* Verificar se o comando foi "quit". Em caso afirmativo
 		   não há mais nada a fazer a não ser terminar decentemente.
 		 */
-		// Luis
-		if (input != "quit") { 
+		// Luis: Ler o primeiro token para avalioar
+		token = strtok(input, space);
+
+		
+		if (strcmp(input,token) == 0) { 
 			stop = 1; 
 		} else {
 			/* Caso contrário:
-
-			Verificar qual o comando;
-
 
 			Preparar msg_out;
 
 			Usar network_send_receive para enviar msg_out para
 			o server e receber msg_resposta.
 		*/
+
+				// Luis: Switch case com o token para que comando se trata
+				switch(token) {
+					case "put":
+						
+						break;
+					
+					case "get:
+						break;
+
+					case "updade" :
+						break;
+					
+					case "del" :
+						break;
+					
+					case "size" :
+						break;
+
+					default :
+						stip = 1;
+						break;
+							
+				}
 			}
 		
 
