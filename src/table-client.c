@@ -12,12 +12,24 @@
 
 #include "../inc/network_client-private.h"
 
+char **getTokens(char* token) {
+	int count = 0;
+	char *p = token;
+
+	while ( != NULL) {
+		token ++;
+		count++;
+	}
+
+
+}
+
 int main(int argc, char **argv){
 	struct server_t *server;
 	char input[81];
-	struct message_t *msg_out, *msg_resposta;
-	// Luis	
+	struct message_t *msg_out, *msg_resposta;	
 	int i;
+	char *ip_port;
 	int stop;
 	char *command; 
 	char *token;
@@ -25,10 +37,7 @@ int main(int argc, char **argv){
 
 	/* Testar os argumentos de entrada */
 	// Luis
-	if (argc < 1 || argv == NULL) { return 0; }
- 	// Luis
-	for (i = 0; i < argc; i++)
-		if (argv[i] == NULL) { return 0; }
+	if (argc != 1 || argv == NULL || argv[0] == NULL) { return 0; }
 
 	/* Usar network_connect para estabelecer ligação ao servidor */
 	server = network_connect(/* */);
@@ -76,10 +85,9 @@ int main(int argc, char **argv){
 				// Luis: Switch case com o token para que comando se trata
 				switch(token) {
 					case "put":
-						
 						break;
 					
-					case "get:
+					case "get" :
 						break;
 
 					case "update" :
