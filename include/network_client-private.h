@@ -9,6 +9,9 @@ struct server_t{
 	/* tanto antes da ligação estabelecida, como depois.    */
 };
 
+// Estrutura que contem codigo do comando e a string que a representa
+struct commands_t{char *key; int val; };
+
 /* Função que garante o envio de len bytes armazenados em buf,
    através da socket sock.
 */
@@ -18,5 +21,10 @@ int write_all(int sock, char *buf, int len);
    armazenando-os em buf.
 */
 int read_all(int sock, char *buf, int len);
+
+// Funcao que me dá o valor de um comando
+// correspondente a uma string para usar no switch
+int keyfromstring(char *key);
+
 
 #endif

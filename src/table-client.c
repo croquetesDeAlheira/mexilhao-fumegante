@@ -12,28 +12,77 @@
 
 #include "../inc/network_client-private.h"
 
-char **getTokens(char* token) {
-	int count = 0;
-	char *p = token;
+// Definindo os tipos de comandos
+#define BADKEY -1
+#define PUT 1
+#define KEY 2
+#define UPDATE 3
+#define DEL 4
+#define SIZE 5
 
-	while ( != NULL) {
-		token ++;
-		count++;
-	}
+const char space[2] = " ";
 
+// A
+static struct commands_t lookUpTabble[] = {
+	{"put", PUT}, 
+	{"key", KEY}, 
+	{"update", UPDATE}, 
+	{"del", DEL}, 
+	{"size", SIZE} 
+};
 
+// Numero de comandos definidos de maneira automatica
+#define NKEYS (sizeof(lookUpTabble) / sizeof(struct commands_t))
+
+// Funcao que me dá o valor de um comando
+// correspondente a uma string para usar no switch
+int keyfromstring(char *key) {
+	int i;
+	// Estrutura definida em network_client-private.h
+	struct commands_t *p;
+
+  for (i = 0; i < NKEYS; i++) {
+  	p = lookUpTabble[i];
+		if (strcmp(p->key, key) == 0)
+    	return p->val;
+   }
+    return BADKEY;
 }
 
+// Devolve um apontador de apontadores
+// contendo o resto dos tokens
+char ** getTokens (char* token) {
+	char **tokens;
+	int i;
+
+	// Calloc inicializa a NULL os nao atribuidos
+	tokens = (char**)calloc(3, sizeof(char*));
+	token = strtok(NULL, space);
+	
+	i = 0;
+	while (token != NULL) {
+		tokens[i] = strdup(token);
+		token = strtok(NULL, space);
+		i++;
+	}
+
+	return tokens;
+}
+
+/************************************************************
+ *                    Main Function                         *
+ ************************************************************/
 int main(int argc, char **argv){
 	struct server_t *server;
 	char input[81];
 	struct message_t *msg_out, *msg_resposta;	
-	int i;
-	char *ip_port;
-	int stop;
-	char *command; 
-	char *token;
-	const char space[2] = " ";
+	int i, stop, sigla, size;
+	char *command, token, dataToNetwork;
+	char **arguments;
+	struct data_t data*;
+	struct entry_t entry;
+
+	const char quit[5] = "quit";
 
 	/* Testar os argumentos de entrada */
 	// Luis
@@ -44,9 +93,9 @@ int main(int argc, char **argv){
 	// Luis	
 	stop = 0;
 	/* Fazer ciclo até que o utilizador resolva fazer "quit" */
- 	while (stop == 0){ // Condicao do while luis
+ 	while (stop == 0){ 
 
-		printf(">>> "); // Mostrar a prompt para inserção de comando
+		printf(">>> "); // Mostrar a prompt para receber comando
 
 		/* Receber o comando introduzido pelo utilizador
 		   Sugestão: usar fgets de stdio.h
@@ -54,7 +103,6 @@ int main(int argc, char **argv){
 		   comando fgets, o carater \n é incluido antes do \0.
 		   Convém retirar o \n substituindo-o por \0.
 		*/
-		// Luis
 		fgets(input,80,stdin);
 
 		// Retirar o caracter \n
@@ -67,47 +115,126 @@ int main(int argc, char **argv){
 		/* Verificar se o comando foi "quit". Em caso afirmativo
 		   não há mais nada a fazer a não ser terminar decentemente.
 		 */
-		// Luis: Ler o primeiro token para avalioar
+		// Luis: Ler o primeiro token para avaliar
 		token = strtok(input, space);
 
-		
-		if (strcmp(input,token) == 0) { 
+		// Leu quit sai do ciclo while
+		if (strcmp(quit,token) == 0) { 
 			stop = 1; 
 		} else {
 			/* Caso contrário:
-
 			Preparar msg_out;
-
 			Usar network_send_receive para enviar msg_out para
 			o server e receber msg_resposta.
-		*/
+			*/
 
-				// Luis: Switch case com o token para que comando se trata
-				switch(token) {
-					case "put":
-						break;
-					
-					case "get" :
+			// Sigla do comando para poder correr o switch
+			sigla = keyfromstring(token);
+
+			switch(sigla) {
+				case BADKEY :
+					// Algo como
+					printf("Comando nao conhecido, por favor tente de novo\n");			
+					break;
+
+				case PUT :
+					// argumentos do put
+					arguments = getTokens(token);
+					size = strlen(arguments[1]) + 1;
+					// Criar o data 
+					data = data_create2(size, arguments[1]);
+					//Criar o entry
+					entry = entry_create(arguments[0], data);
+					// Definir a mensagem
+					msg_out = (struct message_t*)malloc(sizeof(struct message_t));
+					// Atributos de msg
+					msg_out->opcode = OC_PUT;
+					msg_out->c_type = CT_ENTRY;
+					msg_out->content->entry = entry;
+
+					// manda a msg para a rede
+					// size noutro contexto
+					size = message_to_buffer(msg_out. dataToNetwork);
+
+					// A partir daqui não faço ideia...
+
+					// Libertar memória
+					data_destroy(data);
+					entry_destroy(entry);
+					break;
+
+				case KEY :
+					arguments = getTokens(token);
+					msg_out = (struct message_t*)malloc(sizeof(struct message_t));
+					// Atributos de msg
+					msg_out->opcode = OC_GET;
+					msg_out->c_type = CT_KEY;
+					msg_out->content->key = strdup(arguments[0]);
+
+					// manda a msg para a rede
+					// size noutro contexto
+					size = message_to_buffer(msg_out. dataToNetwork);
+
+					// A partir daqui não faço ideia...
+
+					case UPDATE :
+						// argumentos do put
+					arguments = getTokens(token);
+					size = strlen(arguments[1]) + 1;
+					// Criar o data 
+					data = data_create2(size, arguments[1]);
+					//Criar o entry
+					entry = entry_create(arguments[0], data);
+					// Definir a mensagem
+					msg_out = (struct message_t*)malloc(sizeof(struct message_t));
+					// Atributos de msg
+					msg_out->opcode = OC_UPDATE;
+					msg_out->c_type = CT_ENTRY;
+					msg_out->content->entry = entry;
+
+					// manda a msg para a rede
+					// size noutro contexto
+					size = message_to_buffer(msg_out. dataToNetwork);
+
+					// A partir daqui não faço ideia...
+
+					// Libertar memória
+					data_destroy(data);
+					entry_destroy(entry);
+					break;
+
+					case DEL : 
+						arguments = getTokens(token);
+						msg_out = (struct message_t*)malloc(sizeof(struct message_t));
+						msg_out->opcode = OC_DEL;
+						msg_out->c_type = CT_KEY;
+						msg_out->content->key = strdup(arguments[0]);
+
+						// manda a msg para a rede
+						// size noutro contexto
+						size = message_to_buffer(msg_out. dataToNetwork);
+
+						// A partir daqui não faço ideia...
 						break;
 
-					case "update" :
-						break;
-					
-					case "del" :
-						break;
-					
-					case "size" :
-						break;
+					case SIZE :
+						arguments = getTokens(token);
+						msg_out = (struct message_t*)malloc(sizeof(struct message_t));
+						msg_out->opcode = OC_SIZE;
+						msg_out->c_type = CT_RESULT; // NOT SURE!!!!
+						msg_out->content->result = arguments[0];
 
-					default :
-						printf("O comando inserido (%s) nao existe\n", token);
-						//stop = 1;
+						// manda a msg para a rede
+						// size noutro contexto
+						size = message_to_buffer(msg_out. dataToNetwork);
+
+						// A partir daqui não faço ideia...
 						break;
-							
-				}
 			}
-		
-
+			// Liberta memoria dos argumentos e da memoria
+			free_message(msg_out);			
+			list_free_keys(arguments);
+		}
 	}
   	return network_close(server);
 }
