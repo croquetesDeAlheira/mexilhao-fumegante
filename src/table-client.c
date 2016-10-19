@@ -149,8 +149,6 @@ int main(int argc, char **argv){
 					data = data_create2(size, arguments[1]);
 					//Criar o entry
 					entry = entry_create(arguments[0], data);
-					// Definir a mensagem
-					msg_out = (struct message_t*)malloc(sizeof(struct message_t));
 					// Atributos de msg
 					msg_out->opcode = OC_PUT;
 					msg_out->c_type = CT_ENTRY;
@@ -169,7 +167,7 @@ int main(int argc, char **argv){
 
 				case KEY :
 					arguments = getTokens(token);
-					msg_out = (struct message_t*)malloc(sizeof(struct message_t));
+					
 					// Atributos de msg
 					msg_out->opcode = OC_GET;
 					msg_out->c_type = CT_KEY;
@@ -189,8 +187,7 @@ int main(int argc, char **argv){
 					data = data_create2(size, arguments[1]);
 					//Criar o entry
 					entry = entry_create(arguments[0], data);
-					// Definir a mensagem
-					msg_out = (struct message_t*)malloc(sizeof(struct message_t));
+					
 					// Atributos de msg
 					msg_out->opcode = OC_UPDATE;
 					msg_out->c_type = CT_ENTRY;
@@ -209,7 +206,7 @@ int main(int argc, char **argv){
 
 					case DEL : 
 						arguments = getTokens(token);
-						msg_out = (struct message_t*)malloc(sizeof(struct message_t));
+						
 						msg_out->opcode = OC_DEL;
 						msg_out->c_type = CT_KEY;
 						msg_out->content->key = strdup(arguments[0]);
@@ -223,7 +220,7 @@ int main(int argc, char **argv){
 
 					case SIZE :
 						arguments = getTokens(token);
-						msg_out = (struct message_t*)malloc(sizeof(struct message_t));
+						
 						msg_out->opcode = OC_SIZE;
 						msg_out->c_type = CT_RESULT; // NOT SURE!!!!
 						msg_out->content->result = arguments[0];
