@@ -3,14 +3,6 @@
 #include <stdlib.h>
 
 
-int write_all(int sock, char *buf, int len){
-}
-
-
-int read_all(int sock, char *buf, int len){
-}
-
-
 struct server_t *network_connect(const char *address_port){
 	struct server_t *server = malloc(sizeof(struct server_t));
 
