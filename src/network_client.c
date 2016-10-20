@@ -39,13 +39,13 @@ struct message_t *network_send_receive(struct server_t *server, struct message_t
 	   logo de seguida
 	*/
 	msg_size = htonl(message_size);
- 	result = write_all(server->/*atributo*/, (char *) &msg_size, _INT));
+ 	result = write_all(server->/*atributo*/, (char *) &msg_size, _INT);
 
 	/* Verificar se o envio teve sucesso */
 
 	/* Enviar a mensagem que foi previamente serializada */
 
-	result = write_all(server->/*atributo*/, message_out, message_size));
+	result = write_all(server->/*atributo*/, message_out, message_size);
 
 	/* Verificar se o envio teve sucesso */
 
