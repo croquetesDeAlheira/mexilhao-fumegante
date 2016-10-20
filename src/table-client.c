@@ -25,7 +25,7 @@ const char space[2] = " ";
 // A
 static struct commands_t lookUpTabble[] = {
 	{"put", PUT}, 
-	{"key", KEY}, 
+	{"get", GET}, 
 	{"update", UPDATE}, 
 	{"del", DEL}, 
 	{"size", SIZE} 
@@ -76,7 +76,8 @@ char ** getTokens (char* token) {
 int main(int argc, char **argv){
 	struct server_t *server;
 	char input[81];
-	struct message_t *msg_out, *msg_resposta;	
+	struct message_t *msg_out, *msg_resposta;
+	char *ip, *port;
 	int i, stop, sigla, size;
 	char *command, token, dataToNetwork;
 	char **arguments;
@@ -84,16 +85,23 @@ int main(int argc, char **argv){
 	struct entry_t entry;
 
 	const char quit[5] = "quit";
+	const char ip_port_seperator[2] = ":";
+	const char get_all_keys[2] = "!";
 
 	/* Testar os argumentos de entrada */
-	// Luis
-	if (argc != 1 || argv == NULL || argv[0] == NULL) { return 0; }
+	// Luis: o nome do programa conta sempre como argumento
+	if (argc != 2 || argv == NULL || argv[1] == NULL) { 
+		printf("Erro de argumentos.\n");1
+		printf("Exemplo de uso: /table_client 10.101.148.144:54321\n");
+		return -1; 
+	}
 
 	/* Usar network_connect para estabelecer ligação ao servidor */
-	server = network_connect(/* */);
-	// Luis	
-	stop = 0;
+	// Passa ip:porto
+	server = network_connect(argv[1]);
+
 	/* Fazer ciclo até que o utilizador resolva fazer "quit" */
+	stop = 0;
  	while (stop == 0){ 
 
 		printf(">>> "); // Mostrar a prompt para receber comando
@@ -138,7 +146,14 @@ int main(int argc, char **argv){
 			switch(sigla) {
 				case BADKEY :
 					// Algo como
-					printf("Comando nao conhecido, por favor tente de novo\n");			
+					printf("Comando nao conhecido, por favor tente de novo\n");
+					printf("Exemplo de uso: put <key> <data>\n");
+					printf("Exemplo de uso: get <key>\n");
+					printf("Exemplo de uso: get !\n");
+					printf("Exemplo de uso: del <key>\n");
+					printf("Exemplo de uso: size\n");
+					printf("Exemplo de uso: quit\n");
+
 					break;
 
 				case PUT :
@@ -165,7 +180,7 @@ int main(int argc, char **argv){
 					entry_destroy(entry);
 					break;
 
-				case KEY :
+				case GET :
 					arguments = getTokens(token);
 					
 					// Atributos de msg
@@ -175,6 +190,7 @@ int main(int argc, char **argv){
 
 					// manda a msg para a rede
 					// size noutro contexto
+					// Vai ser preciso para enviar o tamanho da próxima msg
 					size = message_to_buffer(msg_out. dataToNetwork);
 
 					// A partir daqui não faço ideia...
@@ -195,7 +211,9 @@ int main(int argc, char **argv){
 
 					// manda a msg para a rede
 					// size noutro contexto
+					// Vai ser preciso para enviar o tamanho da próxima msg
 					size = message_to_buffer(msg_out. dataToNetwork);
+
 
 					// A partir daqui não faço ideia...
 
@@ -213,6 +231,7 @@ int main(int argc, char **argv){
 
 						// manda a msg para a rede
 						// size noutro contexto
+						// Vai ser preciso para enviar o tamanho da próxima msg
 						size = message_to_buffer(msg_out. dataToNetwork);
 
 						// A partir daqui não faço ideia...
@@ -222,11 +241,11 @@ int main(int argc, char **argv){
 						arguments = getTokens(token);
 						
 						msg_out->opcode = OC_SIZE;
-						msg_out->c_type = CT_RESULT; // NOT SURE!!!!
-						msg_out->content->result = arguments[0];
+						msg_out->c_type = CT_RESULT; 
 
 						// manda a msg para a rede
 						// size noutro contexto
+						// Vai ser preciso para enviar o tamanho da próxima msg
 						size = message_to_buffer(msg_out. dataToNetwork);
 
 						// A partir daqui não faço ideia...
