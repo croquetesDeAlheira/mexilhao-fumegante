@@ -1,4 +1,12 @@
 /*
+*		Grupo 12
+* @author Daniel Santos 44887
+* @author Luis Barros  47082
+* @author Marcus Dias 44901
+*/
+
+
+/*
 	Programa cliente para manipular tabela de hash remota.
 	Os comandos introduzido no programa não deverão exceder
 	80 carateres.
@@ -169,11 +177,11 @@ int main(int argc, char **argv){
 					msg_out->c_type = CT_ENTRY;
 					msg_out->content->entry = entry;
 
-					// manda a msg para a rede
-					// size noutro contexto
-					size = message_to_buffer(msg_out. dataToNetwork);
+					// Envia msg e recebe resposta
+					msg_resposta = network_send_receive(server, msg_out);
 
-					// A partir daqui não faço ideia...
+					// Escreve resposta no ecran
+					printf("Resultado da operação PUT: %d\n", msg_resposta->content->result);
 
 					// Libertar memória
 					data_destroy(data);
@@ -193,34 +201,36 @@ int main(int argc, char **argv){
 					// Vai ser preciso para enviar o tamanho da próxima msg
 					size = message_to_buffer(msg_out. dataToNetwork);
 
-					// A partir daqui não faço ideia...
+					// Envia msg e recebe resposta
+					msg_resposta = network_send_receive(server, msg_out);
+
+					// Escreve resposta no ecran
+					printf("Resultado da operação GET: %s\n", ()msg_resposta->content->data);
 
 					case UPDATE :
 						// argumentos do put
-					arguments = getTokens(token);
-					size = strlen(arguments[1]) + 1;
-					// Criar o data 
-					data = data_create2(size, arguments[1]);
-					//Criar o entry
-					entry = entry_create(arguments[0], data);
+						arguments = getTokens(token);
+						size = strlen(arguments[1]) + 1;
+						// Criar o data 
+						data = data_create2(size, arguments[1]);
+						//Criar o entry
+						entry = entry_create(arguments[0], data);
 					
-					// Atributos de msg
-					msg_out->opcode = OC_UPDATE;
-					msg_out->c_type = CT_ENTRY;
-					msg_out->content->entry = entry;
+						// Atributos de msg
+						msg_out->opcode = OC_UPDATE;
+						msg_out->c_type = CT_ENTRY;
+						msg_out->content->entry = entry;
 
-					// manda a msg para a rede
-					// size noutro contexto
-					// Vai ser preciso para enviar o tamanho da próxima msg
-					size = message_to_buffer(msg_out. dataToNetwork);
+						// Envia msg e recebe resposta
+						msg_resposta = network_send_receive(server, msg_out);
 
+						// Escreve resposta no ecran
+						printf("Resultado da operação UPDATE: %d\n", msg_resposta->content->result);
 
-					// A partir daqui não faço ideia...
-
-					// Libertar memória
-					data_destroy(data);
-					entry_destroy(entry);
-					break;
+						// Libertar memória
+						data_destroy(data);
+						entry_destroy(entry);
+						break;
 
 					case DEL : 
 						arguments = getTokens(token);
@@ -234,7 +244,11 @@ int main(int argc, char **argv){
 						// Vai ser preciso para enviar o tamanho da próxima msg
 						size = message_to_buffer(msg_out. dataToNetwork);
 
-						// A partir daqui não faço ideia...
+						// Envia msg e recebe resposta
+						msg_resposta = network_send_receive(server, msg_out);
+
+						// Escreve resposta no ecran
+						printf("Resultado da operação DEL: %d\n", msg_resposta->content->result);
 						break;
 
 					case SIZE :
@@ -243,15 +257,16 @@ int main(int argc, char **argv){
 						msg_out->opcode = OC_SIZE;
 						msg_out->c_type = CT_RESULT; 
 
-						// manda a msg para a rede
-						// size noutro contexto
-						// Vai ser preciso para enviar o tamanho da próxima msg
-						size = message_to_buffer(msg_out. dataToNetwork);
+						// Envia msg e recebe resposta
+						msg_resposta = network_send_receive(server, msg_out);
 
-						// A partir daqui não faço ideia...
+						// Escreve resposta no ecran
+						printf("Numero de elementos: %d\n", msg_resposta->content->result);
+
 						break;
 			}
 			// Liberta memoria dos argumentos e da memoria
+			free_message(msg_resposta);
 			free_message(msg_out);			
 			list_free_keys(arguments);
 		}
