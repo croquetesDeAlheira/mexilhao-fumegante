@@ -5,8 +5,28 @@
 
 struct server_t *network_connect(const char *address_port){
 	struct server_t *server = malloc(sizeof(struct server_t));
-
+	
 	/* Verificar parâmetro da função e alocação de memória */
+	if(address_port == NULL){ return NULL; }
+	if(server == NULL){ return NULL; }
+	
+
+	// Separar os elementos da string, ip : porto
+	// Pode estar errado ou ser desnecessário, ainda em estudo xD
+	char *ip, *port;
+	int i = 0, p = 0;
+	int doispontos = 0;
+	while(*address_port != NULL){
+		if(*address_port != ':' && doispontos == 0){
+			*(ip + i) = *(address_port + i);	
+		}else{
+			i++;
+			*(port + p) = *(address_port + i);
+			doispontos = 1;
+		}
+	}
+	
+	int inet_res = inet_pton(AF_INET,	
 
 	/* Estabelecer ligação ao servidor:
 
@@ -16,7 +36,10 @@ struct server_t *network_connect(const char *address_port){
 		Criar a socket.
 
 		Estabelecer ligação.
+	
 	*/
+
+	
 
 	/* Se a ligação não foi estabelecida, retornar NULL */
 
