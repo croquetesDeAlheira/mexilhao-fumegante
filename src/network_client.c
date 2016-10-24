@@ -9,25 +9,44 @@ struct server_t *network_connect(const char *address_port){
 	/* Verificar parâmetro da função e alocação de memória */
 	if(address_port == NULL){ return NULL; }
 	if(server == NULL){ return NULL; }
-	
 
 	// Separar os elementos da string, ip : porto
-	// Pode estar errado ou ser desnecessário, ainda em estudo xD
+	const char ip_port_seperator[2] = ":";
 	char *ip, *port;
-	int i = 0, p = 0;
-	int doispontos = 0;
-	while(*address_port != NULL){
-		if(*address_port != ':' && doispontos == 0){
-			*(ip + i) = *(address_port + i);	
-		}else{
-			i++;
-			*(port + p) = *(address_port + i);
-			doispontos = 1;
-		}
+	
+	char *token = strtok(address_port, ip_port_seperator);
+	ip = token;
+	token = strtok(NULL, " ");
+	port = token;
+	
+	// IP
+	int inet_res = inet_pton(AF_INET, ip, &(server->addr.sin_addr));
+	// Porto	
+	server->addr.sin_port = htons(port);
+	// Tipo
+	server->addr.sin_family = AF_INET;
+	//errno = 0;
+	if(inet_res == -1){
+		//fprintf(stderr,"inet_pton IPv4 error: %d\n",errno);
+	}else if(inet_res == 0){
+		printf("Endereço IP não é válido\n");
+		return NULL;
 	}
 	
-	int inet_res = inet_pton(AF_INET,	
+	// Criação do socket
+	int sockt;
+	// Também pode ser usado o SOCK_DGRAM no tipo, UDP
+	if((sockt = socket (AF_INET, SOCK_STREAM, 0)) < 0){
+		perror("Problema na criação do socket\n");
+		return NULL;
+	}
 
+	// Estabeleber ligação
+	if(connect(sockt, (struct sockaddr *) &server->addr, sizeof(server->addr)) < 0){
+		perror("Problema a conectar ao servidor\n");
+		return NULL;
+	}
+	
 	/* Estabelecer ligação ao servidor:
 
 		Preencher estrutura struct sockaddr_in com dados do
