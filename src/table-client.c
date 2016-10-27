@@ -30,7 +30,8 @@
 
 const char space[2] = " ";
 
-// A
+// Estrutura para poder associar os comandos
+// aos comandos
 static struct commands_t lookUpTabble[] = {
 	{"put", PUT}, 
 	{"get", GET}, 
@@ -78,23 +79,53 @@ char ** getTokens (char* token) {
 	return tokens;
 }
 
+// Função que imprime uma mensagem 
+void print_msg(struct message_t *msg, char* title) {
+	int i;
+	
+	printf("%s\n", title);
+	printf("opcode: %d, c_type: %d\n", msg->opcode, msg->c_type);
+	switch(msg->c_type) {
+		case CT_ENTRY:{
+			printf("key: %s\n", msg->content.entry->key);
+			printf("datasize: %d\n", msg->content.entry->value->datasize);
+		}break;
+		case CT_KEY:{
+			printf("key: %s\n", msg->content.key);
+		}break;
+		case CT_KEYS:{
+			for(i = 0; msg->content.keys[i] != NULL; i++) {
+				printf("key[%d]: %s\n", i, msg->content.keys[i]);
+			}
+		}break;
+		case CT_VALUE:{
+			printf("datasize: %d\n", msg->content.data->datasize);
+		}break;
+		case CT_RESULT:{
+			printf("result: %d\n", msg->content.result);
+		};
+	}
+	printf("-------------------\n");
+}
+
 /************************************************************
  *                    Main Function                         *
  ************************************************************/
 int main(int argc, char **argv){
 	struct server_t *server;
 	char input[81];
-	struct message_t *msg_out, *msg_resposta;
+	struct message_t *msg_out, *msg_resposta, *msg_size;
 	char *ip, *port;
-	int i, stop, sigla, size;
+	int i, stop, sigla, sizem m_size;
 	char *command, token, dataToNetwork;
 	char **arguments;
 	struct data_t data*;
-	struct entry_t entry;
 
 	const char quit[5] = "quit";
 	const char ip_port_seperator[2] = ":";
 	const char get_all_keys[2] = "!";
+	const char msg_title_out[31] = "Mensagem enviada para servidor"
+	const char msg_title_in[30] = "Mensagem recebida do servidor"
 
 	/* Testar os argumentos de entrada */
 	// Luis: o nome do programa conta sempre como argumento
@@ -161,7 +192,6 @@ int main(int argc, char **argv){
 					printf("Exemplo de uso: del <key>\n");
 					printf("Exemplo de uso: size\n");
 					printf("Exemplo de uso: quit\n");
-
 					break;
 
 				case PUT :
@@ -171,104 +201,81 @@ int main(int argc, char **argv){
 					// Criar o data 
 					data = data_create2(size, arguments[1]);
 					//Criar o entry
-					entry = entry_create(arguments[0], data);
 					// Atributos de msg
 					msg_out->opcode = OC_PUT;
 					msg_out->c_type = CT_ENTRY;
-					msg_out->content->entry = entry;
-
-					// Envia msg e recebe resposta
-					msg_resposta = network_send_receive(server, msg_out);
-
-					// Escreve resposta no ecran
-					printf("Resultado da operação PUT: %d\n", msg_resposta->content->result);
-
+					msg_out->content->entry = 
+						entry_create(arguments[0], data);
 					// Libertar memória
 					data_destroy(data);
-					entry_destroy(entry);
 					break;
 
 				case GET :
 					arguments = getTokens(token);
-					
 					// Atributos de msg
 					msg_out->opcode = OC_GET;
 					msg_out->c_type = CT_KEY;
 					msg_out->content->key = strdup(arguments[0]);
 
-					// manda a msg para a rede
-					// size noutro contexto
-					// Vai ser preciso para enviar o tamanho da próxima msg
-					size = message_to_buffer(msg_out. dataToNetwork);
+				case UPDATE :
+					// argumentos do put
+					arguments = getTokens(token);
+					size = strlen(arguments[1]) + 1;
+					// Criar o data 
+					data = data_create2(size, arguments[1]);
+					// Atributos de msg
+					msg_out->opcode = OC_UPDATE;
+					msg_out->c_type = CT_ENTRY;
+					msg_out->content->entry = 
+						entry_create(arguments[0], data);
+					// Libertar memória
+					data_destroy(data);
+					break;
 
-					// Envia msg e recebe resposta
-					msg_resposta = network_send_receive(server, msg_out);
+				case DEL : 
+					arguments = getTokens(token);		
+					msg_out->opcode = OC_DEL;
+					msg_out->c_type = CT_KEY;
+					msg_out->content->key = strdup(arguments[0]);
+					break;
 
-					// Escreve resposta no ecran
-					printf("Resultado da operação GET: %s\n", ()msg_resposta->content->data);
-
-					case UPDATE :
-						// argumentos do put
-						arguments = getTokens(token);
-						size = strlen(arguments[1]) + 1;
-						// Criar o data 
-						data = data_create2(size, arguments[1]);
-						//Criar o entry
-						entry = entry_create(arguments[0], data);
-					
-						// Atributos de msg
-						msg_out->opcode = OC_UPDATE;
-						msg_out->c_type = CT_ENTRY;
-						msg_out->content->entry = entry;
-
-						// Envia msg e recebe resposta
-						msg_resposta = network_send_receive(server, msg_out);
-
-						// Escreve resposta no ecran
-						printf("Resultado da operação UPDATE: %d\n", msg_resposta->content->result);
-
-						// Libertar memória
-						data_destroy(data);
-						entry_destroy(entry);
-						break;
-
-					case DEL : 
-						arguments = getTokens(token);
-						
-						msg_out->opcode = OC_DEL;
-						msg_out->c_type = CT_KEY;
-						msg_out->content->key = strdup(arguments[0]);
-
-						// manda a msg para a rede
-						// size noutro contexto
-						// Vai ser preciso para enviar o tamanho da próxima msg
-						size = message_to_buffer(msg_out. dataToNetwork);
-
-						// Envia msg e recebe resposta
-						msg_resposta = network_send_receive(server, msg_out);
-
-						// Escreve resposta no ecran
-						printf("Resultado da operação DEL: %d\n", msg_resposta->content->result);
-						break;
-
-					case SIZE :
-						arguments = getTokens(token);
-						
-						msg_out->opcode = OC_SIZE;
-						msg_out->c_type = CT_RESULT; 
-
-						// Envia msg e recebe resposta
-						msg_resposta = network_send_receive(server, msg_out);
-
-						// Escreve resposta no ecran
-						printf("Numero de elementos: %d\n", msg_resposta->content->result);
-
-						break;
+				case SIZE :	
+					msg_out->opcode = OC_SIZE;
+					msg_out->c_type = CT_RESULT; 
+					break;
 			}
-			// Liberta memoria dos argumentos e da memoria
-			free_message(msg_resposta);
-			free_message(msg_out);			
-			list_free_keys(arguments);
+
+			// Mensagens carregadas
+			// Trata de enviar  e receber 
+			// Faz os prints necessários
+			if (sigla != BADKEY) {
+				// Serializa a msg
+				m_size = message_to_buffer(msg_out, dataToNetwork);
+				// Prepara a msg com o tamanho o pedido a enviar
+				msg_size = (struct message_t*)malloc(sizeof(struct message_t));
+				if (msg_size == NULL) { 
+					free_message(msg_out);			
+					list_free_keys(arguments);	
+					break; 
+				}
+				// Inicilializa atributos
+				msg_size->opcode = OC_SIZE;
+				msg_size->c_type = CT_RESULT;
+				msg_size->entry->result = m_size;
+				// Envia msg com o tamanho do pedido
+				network_send_receive(server, msg_out);
+				// Imprime msg a enviar
+				print_msg(msg_out, msg_title_out);
+				// Envia a msg com o pedido e aguarda resposta
+				msg_resposta = network_send_receive(server, msg_out);
+				// Imprime a msg recebida
+				print_msg(msg_resposta, msg_title_in);
+
+				// Liberta memoria dos argumentos e da memoria
+				free_message(msg_out);			
+				list_free_keys(arguments);	
+			}
+			
 		}
 	}
   	return network_close(server);
