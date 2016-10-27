@@ -1,7 +1,9 @@
-#Grupo 12
-#Daniel Santos 44887
-#Luís Costa 47082
-#Marcus Dias 44901
+####################################
+#		Grupo 12           #
+# @author Daniel Santos 44887	   #
+# @author Luis Barros  47082	   #
+# @author Marcus Dias 44901	   #
+####################################
 
 BIN = bin
 INC = include
@@ -14,9 +16,17 @@ CFLAGS = -I include
 #OBJFILES_LIST = $(OBJ)/data.o $(OBJ)/entry.o $(OBJ)/list.o $(OBJ)/test_list.o
 OBJFILES_TABLE = $(OBJ)/data.o $(OBJ)/entry.o $(OBJ)/list.o $(OBJ)/table.o $(OBJ)/test_table.o 
 OBJFILES_MESSAGE = $(OBJ)/data.o $(OBJ)/entry.o $(OBJ)/list.o $(OBJ)/message.o $(OBJ)/test_message.o
+OBJFILES_CLIENT = $(OBJ)/table-client.o $(OBJ)/message.o
+OBJFILES_SERVER = $(OBJ)/table-server.o $(OBJ)/message.o $(OBJ)/table.o
 
 all: test_table test_message
 
+table-client:
+	gcc -o table-client $(OBJFILES_CLIENT)
+	
+table-server:
+	gcc -o table-server $(OBJFILES_SERVER)
+	
 test_message: $(OBJFILES_MESSAGE)
 	gcc -o test_message $(OBJFILES_MESSAGE)
 
@@ -31,6 +41,15 @@ test_table: $(OBJFILES_TABLE)
 
 #test_data: $(OBJFILES_DATA)
 #	gcc -o test_data $(OBJFILES_DATA)
+
+$(OBJ)/table-server.o: $(SRC)/table-server.c $(INC)/table-server.h $(INC)/inet.h $(INC)/table-private.h $(INC)/message-private.h
+	gcc $(CFLAGS) -c table-server.c -o $(OBJ)/table-server.o
+
+$(OBJ)/table-client.o: $(SRC)/table-client.c $(INC)/table-client.h $(INC)/network_client-private.h 
+	gcc $(CFLAGS) -c table-client.c -o $(OBJ)/table-client.o
+
+$(OBJ)/network_client.o: $(SRC)/network_client.c $(INC)/network_client.h $(INC)/network_client-private.h 
+	gcc $(CFLAGS) -c network_client.c -o $(OBJ)/network-client.o
 
 $(OBJ)/test_message.o: test_message.c $(INC)/list-private.h $(INC)/message-private.h 
 	gcc $(CFLAGS) -c test_message.c -o $(OBJ)/test_message.o
