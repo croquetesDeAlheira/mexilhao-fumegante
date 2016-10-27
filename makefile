@@ -42,14 +42,14 @@ test_table: $(OBJFILES_TABLE)
 #test_data: $(OBJFILES_DATA)
 #	gcc -o test_data $(OBJFILES_DATA)
 
-$(OBJ)/table-server.o: $(SRC)/table-server.c $(INC)/table-server.h $(INC)/inet.h $(INC)/table-private.h $(INC)/message-private.h
-	gcc $(CFLAGS) -c table-server.c -o $(OBJ)/table-server.o
+$(OBJ)/table-server.o: $(SRC)/table-server.c $(INC)/inet.h $(INC)/table-private.h $(INC)/message-private.h
+	gcc $(CFLAGS) -c $(SRC)/table-server.c -o $(OBJ)/table-server.o
 
 $(OBJ)/table-client.o: $(SRC)/table-client.c $(INC)/table-client.h $(INC)/network_client-private.h 
-	gcc $(CFLAGS) -c table-client.c -o $(OBJ)/table-client.o
+	gcc $(CFLAGS) -c $(SRC)/table-client.c -o $(OBJ)/table-client.o
 
 $(OBJ)/network_client.o: $(SRC)/network_client.c $(INC)/network_client.h $(INC)/network_client-private.h 
-	gcc $(CFLAGS) -c network_client.c -o $(OBJ)/network-client.o
+	gcc $(CFLAGS) -c $(SRC)/network_client.c -o $(OBJ)/network-client.o
 
 $(OBJ)/test_message.o: test_message.c $(INC)/list-private.h $(INC)/message-private.h 
 	gcc $(CFLAGS) -c test_message.c -o $(OBJ)/test_message.o
