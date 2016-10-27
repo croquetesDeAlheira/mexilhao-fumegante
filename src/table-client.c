@@ -52,7 +52,7 @@ int keyfromstring(char *key) {
 
   for (i = 0; i < NKEYS; i++) {
   	p = lookUpTabble[i];
-		if (strcmp(p->key, key) == 0)
+	if (strcmp(p->key, key) == 0)
     	return p->val;
    }
     return BADKEY;
@@ -115,7 +115,6 @@ int main(int argc, char **argv){
 	struct server_t *server;
 	char input[81];
 	struct message_t *msg_out, *msg_resposta, *msg_size;
-	char *ip, *port;
 	int i, stop, sigla, sizem m_size;
 	char *command, token, dataToNetwork;
 	char **arguments;
@@ -246,7 +245,7 @@ int main(int argc, char **argv){
 			}
 
 			// Mensagens carregadas
-			// Trata de enviar  e receber 
+			// Trata de enviar e receber 
 			// Faz os prints necessários
 			if (sigla != BADKEY) {
 				// Serializa a msg
@@ -270,9 +269,9 @@ int main(int argc, char **argv){
 				msg_resposta = network_send_receive(server, msg_out);
 				// Imprime a msg recebida
 				print_msg(msg_resposta, msg_title_in);
-
 				// Liberta memoria dos argumentos e da memoria
-				free_message(msg_out);			
+				free_message(msg_out);
+				free_message(msg_size);			
 				list_free_keys(arguments);	
 			}
 			
