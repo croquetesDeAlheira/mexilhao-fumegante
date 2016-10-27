@@ -13,9 +13,9 @@
 */
 #include <error.h>
 
-#include "inet.h"
-#include "table-private.h"
-#include "message-private.h"
+#include "../include/inet.h"
+#include "../include/table-private.h"
+#include "../include/message-private.h"
 
 #define ERROR -1
 #define OK 0

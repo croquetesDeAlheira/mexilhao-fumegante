@@ -16,10 +16,10 @@ CFLAGS = -I include
 #OBJFILES_LIST = $(OBJ)/data.o $(OBJ)/entry.o $(OBJ)/list.o $(OBJ)/test_list.o
 OBJFILES_TABLE = $(OBJ)/data.o $(OBJ)/entry.o $(OBJ)/list.o $(OBJ)/table.o $(OBJ)/test_table.o 
 OBJFILES_MESSAGE = $(OBJ)/data.o $(OBJ)/entry.o $(OBJ)/list.o $(OBJ)/message.o $(OBJ)/test_message.o
-OBJFILES_CLIENT = $(OBJ)/table-client.o $(OBJ)/message.o
-OBJFILES_SERVER = $(OBJ)/table-server.o $(OBJ)/message.o $(OBJ)/table.o
+OBJFILES_CLIENT = $(OBJ)/table-client.o $(OBJ)/message.o $(OBJ)/network_client.o
+OBJFILES_SERVER = $(OBJ)/table-server.o $(OBJ)/message-private.o $(OBJ)/table.o
 
-all: test_table test_message
+all: test_table test_message table-server table-client
 
 table-client: $(OBJFILES_CLIENT)
 	gcc -o table-client $(OBJFILES_CLIENT)

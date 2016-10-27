@@ -18,7 +18,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "../inc/network_client-private.h"
+#include "../include/network_client-private.h"
 
 // Definindo os tipos de comandos
 #define BADKEY -1

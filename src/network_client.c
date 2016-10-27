@@ -6,7 +6,7 @@
 */
 
 
-#include "network_client-private.h"
+#include "../include/network_client-private.h"
 
 #include <stdlib.h>
 
