@@ -21,10 +21,10 @@ OBJFILES_SERVER = $(OBJ)/table-server.o $(OBJ)/message.o $(OBJ)/table.o
 
 all: test_table test_message
 
-table-client:
+table-client: $(OBJFILES_CLIENT)
 	gcc -o table-client $(OBJFILES_CLIENT)
 	
-table-server:
+table-server: $(OBJFILES_SERVER)
 	gcc -o table-server $(OBJFILES_SERVER)
 	
 test_message: $(OBJFILES_MESSAGE)
