@@ -7,6 +7,7 @@
 struct server_t{
 	/* Atributos importantes para interagir com o servidor, */
 	/* tanto antes da ligação estabelecida, como depois.    */
+	int socket;
 	struct sockaddr_in *addr;
 };
 

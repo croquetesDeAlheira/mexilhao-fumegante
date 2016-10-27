@@ -46,22 +46,8 @@ struct server_t *network_connect(const char *address_port){
 		perror("Problema a conectar ao servidor\n");
 		return NULL;
 	}
-	
-	/* Estabelecer ligação ao servidor:
-
-		Preencher estrutura struct sockaddr_in com dados do
-		endereço do servidor.
-
-		Criar a socket.
-
-		Estabelecer ligação.
-	
-	*/
-
-	
-
 	/* Se a ligação não foi estabelecida, retornar NULL */
-
+	server->socket = sockt;
 	return server;
 }
 
@@ -69,56 +55,68 @@ struct message_t *network_send_receive(struct server_t *server, struct message_t
 	char *message_out;
 	int message_size, msg_size, result;
 	struct message_t msg_resposta;
+	
 
 	/* Verificar parâmetros de entrada */
+	if(server == NULL || msg == NULL){return NULL;}
 
 	/* Serializar a mensagem recebida */
 	message_size = message_to_buffer(msg, &message_out);
 
 	/* Verificar se a serialização teve sucesso */
+	if(message_size <= 0){return NULL;} //ocorreu algum erro
 
 	/* Enviar ao servidor o tamanho da mensagem que será enviada
 	   logo de seguida
 	*/
 	msg_size = htonl(message_size);
- 	result = write_all(server->/*atributo*/, (char *) &msg_size, _INT);
-
+ 	result = write_all(server->socket, (char *) &msg_size, _INT); //envia o size primeiro
 	/* Verificar se o envio teve sucesso */
+	if(result != _INT){return NULL;}
+
 
 	/* Enviar a mensagem que foi previamente serializada */
-
-	result = write_all(server->/*atributo*/, message_out, message_size);
+	result = write_all(server->socket, message_out, message_size);
 
 	/* Verificar se o envio teve sucesso */
+	if(result != message_size){return NULL;} //enviar de novo?
 
-	/* De seguida vamos receber a resposta do servidor:
+	/* De seguida vamos receber a resposta do servidor:*/
+	/*		Com a função read_all, receber num inteiro o tamanho da 
+		mensagem de resposta.*/
+	result = read_all(server->socket, (char *) &msg_size, _INT);
+	if(result != _INT){return NULL;}
+	
+	message_size = ntohl(msg_size);
+	
+	/*	Alocar memória para receber o número de bytes da
+		mensagem de resposta.*/
+	message_out = (char *) malloc(message_size);
+	/*		Com a função read_all, receber a mensagem de resposta. */
+	
+	result = read_all(server->socket, message_out, message_size);
+	if(result != message_size){return NULL;}
 
-		Com a função read_all, receber num inteiro o tamanho da 
-		mensagem de resposta.
 
-		Alocar memória para receber o número de bytes da
-		mensagem de resposta.
-
-		Com a função read_all, receber a mensagem de resposta.
-		
-	*/
 
 	/* Desserializar a mensagem de resposta */
-	msg_resposta = buffer_to_message( /* */, /* */ );
+	msg_resposta = buffer_to_message(message_out, message_size);
 
 	/* Verificar se a desserialização teve sucesso */
-
+	if(msg_resposta == NULL){return NULL;}
 	/* Libertar memória */
+	free(message_out);
 
 	return msg_resposta;
 }
 
 int network_close(struct server_t *server){
 	/* Verificar parâmetros de entrada */
-
+	if(server == NULL){ return -1;}
 	/* Terminar ligação ao servidor */
-
+	close(server->socket);
 	/* Libertar memória */
+	free(server);
 }
 
 /* Função que garante o envio de len bytes armazenados em buf,
