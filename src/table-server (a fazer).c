@@ -79,12 +79,15 @@ struct message_t *process_message(struct message_t *msg_pedido, struct table_t *
 		case OC_GET:
 			msg_resposta->opcode = opcode;
 			msg_resposta->c_type = CT_VALUE;
-			msg_resposta->content.value = table_get
-			
-		case OC_ENTRY:
+			msg_resposta->content.value = table_get(tabela, msg_pedido->content.key);
+			break;			
+		case OC_PUT:
+			msg_resposta->opcode;
+			msg_resposta->c_type = CT_RESULT;
+			msg_resposta->content.result = table_put(tabela, msg_pedido->content.entry->key, msg_pedido->content.entry->value);
 			
 		default:	
-
+			printf("opcode nao e´ valido, opcode = %i\n", opcode);
 
 	/* Preparar mensagem de resposta */
 
