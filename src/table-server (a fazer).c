@@ -45,13 +45,46 @@ int make_server_socket(short port){
 	- devolve uma mensagem de resposta com oresultado.
 */
 struct message_t *process_message(struct message_t *msg_pedido, struct table_t *tabela){
-	struct message_t *msg_resposta;
+	struct message_t *msg_resposta = (struct message_t*)malloc(sizeof(struct message_t));
 	
+	if(msg_resposta == NULL){
+		return NULL;
+	}
 	/* Verificar parâmetros de entrada */
-
+	if(msg_pedido == NULL || tabela == NULL){
+		return NULL;
+	}
+	
 	/* Verificar opcode e c_type na mensagem de pedido */
+	short opcode = msg_pedido->opcode;
+	short c_type =msg_pedido->c_type;	
 
 	/* Aplicar operação na tabela */
+	switch(opcode){
+		case OC_SIZE:
+			msg_resposta->opcode = opcode;
+			msg_resposta->c_type = CT_RESULT;
+			msg_resposta->content.result = table_size(tabela);
+			break;
+		case OC_DEL:
+			msg_resposta->opcode = opcode;
+			msg_resposta->c_type = CT_RESULT;
+			msg_resposta->content.result = table_del(tabela, msg_pedido->content.key);
+			break;
+		case OC_UPDATE:
+			msg_resposta->opcode = opcode;
+			msg_resposta->c_type = CT_RESULT;
+			msg_resposta->content.result = table_update(tabela, msg_pedido->content.entry->key, msg_pedido->content.entry->value);
+			break;
+		case OC_GET:
+			msg_resposta->opcode = opcode;
+			msg_resposta->c_type = CT_VALUE;
+			msg_resposta->content.value = table_get
+			
+		case OC_ENTRY:
+			
+		default:	
+
 
 	/* Preparar mensagem de resposta */
 
