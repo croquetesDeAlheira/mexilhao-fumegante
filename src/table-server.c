@@ -12,6 +12,7 @@
    Exemplo de uso: ./table_server 54321 10
 */
 #include <error.h>
+#include <errno.h>
 
 #include "../include/inet.h"
 #include "../include/table-private.h"
@@ -44,7 +45,7 @@ int make_server_socket(short port){
 
   if (listen(socket_fd, 0) < 0){
       perror("Erro ao executar listen");
-      close(sfd);
+      close(socket_fd);
       return -1;
   }
   return socket_fd;
@@ -126,7 +127,7 @@ struct message_t *process_message(struct message_t *msg_pedido, struct table_t *
 		case OC_GET:
 			msg_resposta->opcode = opcode;
 			msg_resposta->c_type = CT_VALUE;
-			msg_resposta->content.value = table_get(tabela, msg_pedido->content.key);
+			msg_resposta->content.data = table_get(tabela, msg_pedido->content.key);
 			break;			
 		case OC_PUT:
 			msg_resposta->opcode;
@@ -135,7 +136,7 @@ struct message_t *process_message(struct message_t *msg_pedido, struct table_t *
 			
 		default:	
 			printf("opcode nao e´ valido, opcode = %i\n", opcode);
-
+		}
 	/* Preparar mensagem de resposta */
 
 	return msg_resposta;
@@ -193,14 +194,14 @@ int network_receive_send(int sockfd, struct table_t *table){
 	   logo de seguida
 	*/
 	msg_size = htonl(message_size);
-	result = write_all(sockfd, (char *) &msg_size, _INT));
+	result = write_all(sockfd, (char *) &msg_size, _INT);
 
 	/* Verificar se o envio teve sucesso */
-	if(result != _int){return ERROR;}
+	if(result != _INT){return ERROR;}
 
 	/* Enviar a mensagem que foi previamente serializada */
 
-	result = write_all(sockfd, message_resposta, message_size));
+	result = write_all(sockfd, message_resposta, message_size);
 
 	/* Verificar se o envio teve sucesso */
 	if(result != message_size){return ERROR;}
@@ -230,7 +231,7 @@ int main(int argc, char **argv){
 	return -1;
 	}
 
-	if ((listening_socket = make_server(atoi(argv[1]))) < 0) return -1;
+	if ((listening_socket = make_server_socket(atoi(argv[1]))) < 0) return -1;
 
 	if ((table = table_create(atoi(argv[2]))) == NULL){
 	result = close(listening_socket);
@@ -250,9 +251,6 @@ int main(int argc, char **argv){
         			client_on = 0;
         			close(connsock);
 			}	
-
-		
-
 		}
 	}
 }

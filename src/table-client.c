@@ -279,7 +279,3 @@ int main(int argc, char **argv){
 	}
   	return network_close(server);
 }
-
-
-
-

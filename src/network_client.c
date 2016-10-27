@@ -9,6 +9,10 @@
 #include "../include/network_client-private.h"
 
 #include <stdlib.h>
+#include <errno.h>
+
+#define ERROR -1
+#define OK 0
 
 
 struct server_t *network_connect(const char *address_port){
@@ -28,11 +32,11 @@ struct server_t *network_connect(const char *address_port){
 	port = token;
 	
 	// IP
-	int inet_res = inet_pton(AF_INET, ip, &(server->addr.sin_addr));
+	int inet_res = inet_pton(AF_INET, ip, &(server->addr->sin_addr));
 	// Porto	
-	server->addr.sin_port = htons(port);
+	server->addr->sin_port = htons(port);
 	// Tipo
-	server->addr.sin_family = AF_INET;
+	server->addr->sin_family = AF_INET;
 	//errno = 0;
 	if(inet_res == -1){
 		//fprintf(stderr,"inet_pton IPv4 error: %d\n",errno);
@@ -62,7 +66,7 @@ struct server_t *network_connect(const char *address_port){
 struct message_t *network_send_receive(struct server_t *server, struct message_t *msg){
 	char *message_out;
 	int message_size, msg_size, result;
-	struct message_t msg_resposta;
+	struct message_t *msg_resposta;
 	
 
 	/* Verificar parâmetros de entrada */
@@ -125,6 +129,8 @@ int network_close(struct server_t *server){
 	close(server->socket);
 	/* Libertar memória */
 	free(server);
+
+	return OK;
 }
 
 /* Função que garante o envio de len bytes armazenados em buf,
