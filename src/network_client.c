@@ -14,7 +14,6 @@
 #define ERROR -1
 #define OK 0
 
-
 struct server_t *network_connect(const char *address_port){
 	struct server_t *server = malloc(sizeof(struct server_t));
 	
@@ -22,19 +21,21 @@ struct server_t *network_connect(const char *address_port){
 	if(address_port == NULL){ return NULL; }
 	if(server == NULL){ return NULL; }
 
-	// Separar os elementos da string, ip : porto
+	// Separar os elementos da string, ip : porto	
 	const char ip_port_seperator[2] = ":";
-	char *ip, *port;
-	
-	char *token = strtok(address_port, ip_port_seperator);
+	char *ip, *port, *p;
+	// adress_por é constante
+	p = strdup(address_port);
+	char *token = strtok(p, ip_port_seperator);
 	ip = token;
-	token = strtok(NULL, " ");
+	token = strtok(NULL, ip_port_seperator);
 	port = token;
+	free(p);
 	
 	// IP
 	int inet_res = inet_pton(AF_INET, ip, &(server->addr->sin_addr));
 	// Porto	
-	server->addr->sin_port = htons(port);
+	server->addr->sin_port = htons(atoi(port));
 	// Tipo
 	server->addr->sin_family = AF_INET;
 	//errno = 0;

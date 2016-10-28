@@ -1,8 +1,8 @@
 ####################################
-#		Grupo 12           #
+#		Grupo 12                   #
 # @author Daniel Santos 44887	   #
 # @author Luis Barros  47082	   #
-# @author Marcus Dias 44901	   #
+# @author Marcus Dias 44901	       #
 ####################################
 
 BIN = bin
@@ -11,13 +11,13 @@ OBJ = obj
 SRC = src
 CFLAGS = -I include
 
-#OBJFILES_DATA = $(OBJ)/data.o $(OBJ)/entry.o $(OBJ)/list.o $(OBJ)/test_data.o
-#OBJFILES_ENTRY = $(OBJ)/data.o $(OBJ)/entry.o $(OBJ)/list.o $(OBJ)/test_entry.o
-#OBJFILES_LIST = $(OBJ)/data.o $(OBJ)/entry.o $(OBJ)/list.o $(OBJ)/test_list.o
+OBJFILES_DATA = $(OBJ)/data.o $(OBJ)/entry.o $(OBJ)/list.o $(OBJ)/test_data.o
+OBJFILES_ENTRY = $(OBJ)/data.o $(OBJ)/entry.o $(OBJ)/list.o $(OBJ)/test_entry.o
+OBJFILES_LIST = $(OBJ)/data.o $(OBJ)/entry.o $(OBJ)/list.o $(OBJ)/test_list.o
 OBJFILES_TABLE = $(OBJ)/data.o $(OBJ)/entry.o $(OBJ)/list.o $(OBJ)/table.o $(OBJ)/test_table.o 
 OBJFILES_MESSAGE = $(OBJ)/data.o $(OBJ)/entry.o $(OBJ)/list.o $(OBJ)/message.o $(OBJ)/test_message.o
-OBJFILES_CLIENT = $(OBJ)/data.o $(OBJ)/entry.o $(OBJ)/list.o $(OBJ)/message.o $(OBJ)/network_client.o 
-OBJFILES_SERVER = $(OBJ)/data.o $(OBJ)/entry.o $(OBJ)/list.o $(OBJ)/table-server.o $(OBJ)/message.o $(OBJ)/table.o
+OBJFILES_CLIENT = $(OBJ)/data.o $(OBJ)/entry.o $(OBJ)/list.o $(OBJ)/table.o $(OBJ)/message.o $(OBJ)/network_client.o $(OBJ)/table-client.o 
+OBJFILES_SERVER = $(OBJ)/data.o $(OBJ)/entry.o $(OBJ)/list.o $(OBJ)/message.o $(OBJ)/table.o $(OBJ)/table-server.o
 
 all: test_table test_message table-server table-client
 
@@ -42,18 +42,34 @@ test_table: $(OBJFILES_TABLE)
 #test_data: $(OBJFILES_DATA)
 #	gcc -o test_data $(OBJFILES_DATA)
 
-$(OBJ)/table-server.o: $(SRC)/table-server.c $(INC)/inet.h $(INC)/table-private.h $(INC)/message-private.h
-	gcc $(CFLAGS) -c $(SRC)/table-server.c -o $(OBJ)/table-server.o
-
+# Ficheiros .o Fase_2 2a parte
 $(OBJ)/table-client.o: $(SRC)/table-client.c $(INC)/network_client-private.h 
-	gcc $(CFLAGS) -c $(SRC)/table-client.c -o $(OBJ)/table-client.o
+	gcc -c $(SRC)/table-client.c -o $(OBJ)/table-client.o
 
+$(OBJ)/network_client.o: $(SRC)/network_client.c $(INC)/network_client-private.h 
+	gcc -c $(SRC)/network_client.c -o $(OBJ)/network-client.o
+
+$(OBJ)/table-server.o: $(SRC)/table-server.c $(INC)/inet.h $(INC)/table-private.h $(INC)/message-private.h
+	gcc -c $(SRC)/table-server.c -o $(OBJ)/table-server.o
+
+
+# Ficheiros .o de teste da Fase 2 1a parte
 $(OBJ)/test_message.o: test_message.c $(INC)/list-private.h $(INC)/message-private.h 
 	gcc $(CFLAGS) -c test_message.c -o $(OBJ)/test_message.o
-	
+
 $(OBJ)/test_table.o: test_table.c $(INC)/data.h $(INC)/entry.h $(INC)/table-private.h 
 	gcc $(CFLAGS) -c test_table.c -o $(OBJ)/test_table.o
+	
 
+# Ficheiros .o Fase_2 1a parte
+$(OBJ)/message.o: $(SRC)/message.c $(INC)/message.h $(INC)/message-private.h
+	gcc -c $(SRC)/message.c -o $(OBJ)/message.o
+
+$(OBJ)/table.o: $(SRC)/table.c $(INC)/table.h $(INC)/table-private.h
+	gcc -c $(SRC)/table.c -o $(OBJ)/table.o
+
+
+# Ficheiros .o de teste da Fase_1
 #$(OBJ)/test_list.o: test_list.c $(INC)/list-private.h
 #	gcc $(CFLAGS) -c test_list.c -o $(OBJ)/test_list.o	
 
@@ -61,17 +77,10 @@ $(OBJ)/test_table.o: test_table.c $(INC)/data.h $(INC)/entry.h $(INC)/table-priv
 #	gcc $(CFLAGS) -c test_entry.c -o $(OBJ)/test_entry.o
 	
 #$(OBJ)/test_data.o: test_data.c $(INC)/data.h
-#	gcc $(CFLAGS) -c test_data.c -o $(OBJ)/test_data.o
+#	gcc $(CF$AGS) -c test_data.c -o $(OBJ)/test_data.o
 
-$(OBJ)/network_client.o: $(SRC)/network_client.c $(INC)/network_client.h $(INC)/network_client-private.h 
-	gcc $(CFLAGS) -c $(SRC)/network_client.c -o $(OBJ)/network-client.o
 
-$(OBJ)/message.o: $(SRC)/message.c $(INC)/message.h $(INC)/message-private.h
-	gcc -c $(SRC)/message.c -o $(OBJ)/message.o
-
-$(OBJ)/table.o: $(SRC)/table.c $(INC)/table.h $(INC)/table-private.h
-	gcc -c $(SRC)/table.c -o $(OBJ)/table.o
-
+# Ficheiros .o da Fase_1 
 $(OBJ)/list.o: $(SRC)/list.c $(INC)/list.h $(INC)/list-private.h $(INC)/entry.h
 	gcc -c $(SRC)/list.c -o $(OBJ)/list.o
 	
@@ -83,7 +92,7 @@ $(OBJ)/data.o: $(SRC)/data.c $(INC)/data.h
 			
 clean:
 	rm -f obj/*.o
-	rm -f test_table test_message
+	rm -f test_table test_message table-server
 	rm -f *~
 	
 .PHONY: clean

@@ -27,6 +27,7 @@
 #define UPDATE 3
 #define DEL 4
 #define SIZE 5
+#define GET 6
 
 const char space[2] = " ";
 
