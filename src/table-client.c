@@ -261,7 +261,8 @@ int main(int argc, char **argv){
 				// Inicilializa atributos
 				msg_size->opcode = OC_SIZE;
 				msg_size->c_type = CT_RESULT;
-				msg_size->entry->result = m_size;
+				// 
+				msg_size->content.entry->value = m_size;
 				// Envia msg com o tamanho do pedido
 				network_send_receive(server, msg_out);
 				// Imprime msg a enviar
