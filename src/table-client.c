@@ -119,7 +119,7 @@ int main(int argc, char **argv){
 	int i, stop, sigla, sizem m_size;
 	char *command, token, dataToNetwork;
 	char **arguments;
-	struct data_t data*;
+	struct data_t *data;
 
 	const char quit[5] = "quit";
 	const char ip_port_seperator[2] = ":";
@@ -204,7 +204,7 @@ int main(int argc, char **argv){
 					// Atributos de msg
 					msg_out->opcode = OC_PUT;
 					msg_out->c_type = CT_ENTRY;
-					msg_out->content->entry = 
+					msg_out->content.entry = 
 						entry_create(arguments[0], data);
 					// Libertar memória
 					data_destroy(data);
@@ -215,7 +215,7 @@ int main(int argc, char **argv){
 					// Atributos de msg
 					msg_out->opcode = OC_GET;
 					msg_out->c_type = CT_KEY;
-					msg_out->content->key = strdup(arguments[0]);
+					msg_out->content.key = strdup(arguments[0]);
 
 				case UPDATE :
 					// argumentos do put
@@ -226,7 +226,7 @@ int main(int argc, char **argv){
 					// Atributos de msg
 					msg_out->opcode = OC_UPDATE;
 					msg_out->c_type = CT_ENTRY;
-					msg_out->content->entry = 
+					msg_out->content.entry = 
 						entry_create(arguments[0], data);
 					// Libertar memória
 					data_destroy(data);
@@ -236,7 +236,7 @@ int main(int argc, char **argv){
 					arguments = getTokens(token);		
 					msg_out->opcode = OC_DEL;
 					msg_out->c_type = CT_KEY;
-					msg_out->content->key = strdup(arguments[0]);
+					msg_out->content.key = strdup(arguments[0]);
 					break;
 
 				case SIZE :	

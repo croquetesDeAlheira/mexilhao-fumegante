@@ -106,31 +106,39 @@ struct message_t *process_message(struct message_t *msg_pedido, struct table_t *
 	/* Verificar opcode e c_type na mensagem de pedido */
 	short opcode = msg_pedido->opcode;
 	short c_type =msg_pedido->c_type;	
-
+	int get_res;
 	/* Aplicar operação na tabela */
+	// opcode de resposta tem que ser opcode + 1
 	switch(opcode){
 		case OC_SIZE:
-			msg_resposta->opcode = opcode;
+			msg_resposta->opcode = opcode+1;
 			msg_resposta->c_type = CT_RESULT;
 			msg_resposta->content.result = table_size(tabela);
 			break;
 		case OC_DEL:
-			msg_resposta->opcode = opcode;
+			msg_resposta->opcode = opcode+1;
 			msg_resposta->c_type = CT_RESULT;
 			msg_resposta->content.result = table_del(tabela, msg_pedido->content.key);
 			break;
 		case OC_UPDATE:
-			msg_resposta->opcode = opcode;
+			msg_resposta->opcode = opcode+1;
 			msg_resposta->c_type = CT_RESULT;
 			msg_resposta->content.result = table_update(tabela, msg_pedido->content.entry->key, msg_pedido->content.entry->value);
 			break;
 		case OC_GET:
-			msg_resposta->opcode = opcode;
-			msg_resposta->c_type = CT_VALUE;
-			msg_resposta->content.data = table_get(tabela, msg_pedido->content.key);
+			// ct_type CT_VALUE se a chave não existe
+			// ct_type CT_KEYS se existe uma ou mais
+			msg_resposta->opcode = opcode+1;
+			if(table_get(tabela, msg_pedido->content.key) == NULL){
+				msg_resposta->c_type = CT_VALUE;
+				msg_resposta->content.result = ERROR;
+			}else{
+				msg_resposta->c_type = CT_KEYS;
+				msg_resposta->content.keys = table_get(tabela, msg_pedido->content.key);
+			}
 			break;			
 		case OC_PUT:
-			msg_resposta->opcode;
+			msg_resposta->opcode+1;
 			msg_resposta->c_type = CT_RESULT;
 			msg_resposta->content.result = table_put(tabela, msg_pedido->content.entry->key, msg_pedido->content.entry->value);
 			
