@@ -93,7 +93,7 @@ int read_all(int sock, char *buf, int len){
 	- devolve uma mensagem de resposta com o resultado.
 */
 struct message_t *process_message(struct message_t *msg_pedido, struct table_t *tabela){
-	mensagem para devolver a resposta
+	//mensagem para devolver a resposta
 	struct message_t *msg_resposta = (struct message_t*)malloc(sizeof(struct message_t));
 	
 	if(msg_resposta == NULL){

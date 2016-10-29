@@ -20,37 +20,7 @@ const int ERROR = -1;
 
 
 
-void free_message(struct message_t *msg){
-	/* Verificar se msg é NULL */
-		if(msg == NULL){ return; }
 
-	/* Se msg->c_type for:
-	VALOR, libertar msg->content.data
-	ENTRY, libertar msg->content.entry_create
-	CHAVES, libertar msg->content.keys
-	CHAVE, libertar msg->content.key
-	*/
-	int type = msg->c_type;
-	switch(type){
-		case CT_RESULT :
-			//empty 
-			break;
-		case CT_VALUE:
-			data_destroy(msg->content.data);
-			break;
-		case CT_KEY:
-			free(msg->content.key);
-			break;
-		case CT_KEYS:
-			list_free_keys(msg->content.keys);
-			break;
-		case CT_ENTRY:
-			entry_destroy(msg->content.entry);
-			break;
-	}
-	free(msg);
-	/* libertar msg */
-}
 
 int message_to_buffer(struct message_t *msg, char **msg_buf){
 
@@ -331,6 +301,38 @@ struct message_t *buffer_to_message(char *msg_buf, int msg_size){
 	
 
 	return msg;
+}
+
+void free_message(struct message_t *msg){
+	/* Verificar se msg é NULL */
+		if(msg == NULL){ return; }
+
+	/* Se msg->c_type for:
+	VALOR, libertar msg->content.data
+	ENTRY, libertar msg->content.entry_create
+	CHAVES, libertar msg->content.keys
+	CHAVE, libertar msg->content.key
+	*/
+	int type = msg->c_type;
+	switch(type){
+		case CT_RESULT :
+			//empty 
+			break;
+		case CT_VALUE:
+			data_destroy(msg->content.data);
+			break;
+		case CT_KEY:
+			free(msg->content.key);
+			break;
+		case CT_KEYS:
+			list_free_keys(msg->content.keys);
+			break;
+		case CT_ENTRY:
+			entry_destroy(msg->content.entry);
+			break;
+	}
+	free(msg);
+	/* libertar msg */
 }
 
 

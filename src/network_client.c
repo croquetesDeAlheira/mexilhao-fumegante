@@ -7,19 +7,35 @@
 
 
 #include "../include/network_client-private.h"
+#include "../include/inet.h"
 
 #include <stdlib.h>
 #include <errno.h>
+#include <netinet/in.h>
+
+
 
 #define ERROR -1
 #define OK 0
 
+
+
+
+void prt1(char *str){
+	printf("%s\n", str);
+}
+
 struct server_t *network_connect(const char *address_port){
+	prt1("network_connect started");
+
 	struct server_t *server = malloc(sizeof(struct server_t));
 	
 	/* Verificar parâmetro da função e alocação de memória */
 	if(address_port == NULL){ return NULL; }
 	if(server == NULL){ return NULL; }
+	/* allocar a memoria do addrs dentro do server*/
+	server->addr = malloc(sizeof(struct sockaddr_in));
+	if(server->addr == NULL){return NULL;}
 
 	// Separar os elementos da string, ip : porto	
 	const char ip_port_seperator[2] = ":";
@@ -27,29 +43,33 @@ struct server_t *network_connect(const char *address_port){
 	// adress_por é constante
 	p = strdup(address_port);
 	char *token = strtok(p, ip_port_seperator);
-	ip = token;
+	ip = strdup(token);
 	token = strtok(NULL, ip_port_seperator);
-	port = token;
+	port = strdup(token);
 	free(p);
 	
-	// IP
+	//fixing inet addrs
 	int inet_res = inet_pton(AF_INET, ip, &(server->addr->sin_addr));
+
+	printf("inet rest = %d\n", inet_res );
+	if(inet_res == -1){
+		return NULL;
+	}else if(inet_res == 0){
+		printf("Endereço IP não é válido\n");
+		return NULL;
+	}
+
 	// Porto	
 	server->addr->sin_port = htons(atoi(port));
 	// Tipo
 	server->addr->sin_family = AF_INET;
 	//errno = 0;
-	if(inet_res == -1){
-		//fprintf(stderr,"inet_pton IPv4 error: %d\n",errno);
-	}else if(inet_res == 0){
-		printf("Endereço IP não é válido\n");
-		return NULL;
-	}
+
 	
 	// Criação do socket
 	int sockt;
 	// Também pode ser usado o SOCK_DGRAM no tipo, UDP
-	if((sockt = socket (AF_INET, SOCK_STREAM, 0)) < 0){
+	if((sockt = socket(AF_INET, SOCK_STREAM, 0)) < 0){
 		perror("Problema na criação do socket\n");
 		return NULL;
 	}
@@ -60,11 +80,13 @@ struct server_t *network_connect(const char *address_port){
 		return NULL;
 	}
 	/* Se a ligação não foi estabelecida, retornar NULL */
+	prt1("network_connect finished- status connected");
 	server->socket = sockt;
 	return server;
 }
 
 struct message_t *network_send_receive(struct server_t *server, struct message_t *msg){
+	prt1("network_send_receive started");
 	char *message_out;
 	int message_size, msg_size, result;
 	struct message_t *msg_resposta;

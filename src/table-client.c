@@ -109,10 +109,20 @@ void print_msg(struct message_t *msg,const char* title) {
 	printf("-------------------\n");
 }
 
+void prt(char *str){
+	printf("%s\n", str);
+}
+
+
+
+
+
 /************************************************************
  *                    Main Function                         *
  ************************************************************/
 int main(int argc, char **argv){
+	prt("started cliente");
+
 	struct server_t *server;
 	char input[81];
 	struct message_t *msg_out, *msg_resposta, *msg_size;
@@ -134,11 +144,14 @@ int main(int argc, char **argv){
 		printf("Exemplo de uso: /table_client 10.101.148.144:54321\n");
 		return -1; 
 	}
+	prt("received args");
+	prt(argv[1]);
 
 	/* Usar network_connect para estabelecer ligação ao servidor */
 	// Passa ip:porto
 	server = network_connect(argv[1]);
-
+	if(server == NULL){exit(0);}
+	prt("connected to network");
 	/* Fazer ciclo até que o utilizador resolva fazer "quit" */
 	stop = 0;
  	while (stop == 0){ 
