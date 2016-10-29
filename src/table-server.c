@@ -126,10 +126,16 @@ struct message_t *process_message(struct message_t *msg_pedido, struct table_t *
 			msg_resposta->content.result = table_update(tabela, msg_pedido->content.entry->key, msg_pedido->content.entry->value);
 			break;
 		case OC_GET:
-			// ct_type CT_VALUE se a chave não existe
-			// ct_type CT_KEYS se existe uma ou mais
+			// c_type CT_VALUE se a chave não existe
+			// c_type CT_KEYS
+			// c_type se for ! table_get_keys
+			// c_type se for key table_get
 			msg_resposta->opcode = opcode+1;
-			if(table_get(tabela, msg_pedido->content.key) == NULL){
+
+			if(msg_pedido->content.key == '!' && tabela->nElems > 0){
+				msg_resposta->c_type = CT_KEYS;
+				msg_resposta->content.keys = table_get_keys(tabela);
+			}else if(table_get(tabela, msg_pedido->content.key) == NULL){
 				msg_resposta->c_type = CT_VALUE;
 				msg_resposta->content.result = ERROR;
 			}else{
