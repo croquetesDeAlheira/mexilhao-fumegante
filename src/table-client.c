@@ -49,12 +49,12 @@ static struct commands_t lookUpTabble[] = {
 int keyfromstring(char *key) {
 	int i;
 	// Estrutura definida em network_client-private.h
-	struct commands_t *p;
+	struct commands_t p;
 
   for (i = 0; i < NKEYS; i++) {
   	p = lookUpTabble[i];
-	if (strcmp(p->key, key) == 0)
-    	return p->val;
+	if (strcmp(p.key, key) == 0)
+    	return p.val;
    }
     return BADKEY;
 }
@@ -81,7 +81,7 @@ char ** getTokens (char* token) {
 }
 
 // Função que imprime uma mensagem 
-void print_msg(struct message_t *msg, char* title) {
+void print_msg(struct message_t *msg,const char* title) {
 	int i;
 	
 	printf("%s\n", title);
@@ -116,21 +116,21 @@ int main(int argc, char **argv){
 	struct server_t *server;
 	char input[81];
 	struct message_t *msg_out, *msg_resposta, *msg_size;
-	int i, stop, sigla, sizem m_size;
-	char *command, token, dataToNetwork;
-	char **arguments;
+	int i, stop, sigla, m_size, size;
+	char *command, *token;
+	char **arguments, **dataToNetwork;
 	struct data_t *data;
 
 	const char quit[5] = "quit";
 	const char ip_port_seperator[2] = ":";
 	const char get_all_keys[2] = "!";
-	const char msg_title_out[31] = "Mensagem enviada para servidor"
-	const char msg_title_in[30] = "Mensagem recebida do servidor"
+	const char msg_title_out[31] = "Mensagem enviada para servidor";
+	const char msg_title_in[30] = "Mensagem recebida do servidor";
 
 	/* Testar os argumentos de entrada */
 	// Luis: o nome do programa conta sempre como argumento
 	if (argc != 2 || argv == NULL || argv[1] == NULL) { 
-		printf("Erro de argumentos.\n");1
+		printf("Erro de argumentos.\n");
 		printf("Exemplo de uso: /table_client 10.101.148.144:54321\n");
 		return -1; 
 	}
@@ -262,7 +262,7 @@ int main(int argc, char **argv){
 				msg_size->opcode = OC_SIZE;
 				msg_size->c_type = CT_RESULT;
 				// 
-				msg_size->content.entry->value = m_size;
+				msg_size->content.result = m_size;
 				// Envia msg com o tamanho do pedido
 				network_send_receive(server, msg_out);
 				// Imprime msg a enviar

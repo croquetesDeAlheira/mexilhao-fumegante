@@ -47,7 +47,7 @@ $(OBJ)/table-client.o: $(SRC)/table-client.c $(INC)/network_client-private.h
 	gcc -c $(SRC)/table-client.c -o $(OBJ)/table-client.o
 
 $(OBJ)/network_client.o: $(SRC)/network_client.c $(INC)/network_client-private.h 
-	gcc -c $(SRC)/network_client.c -o $(OBJ)/network-client.o
+	gcc -c $(SRC)/network_client.c -o $(OBJ)/network_client.o
 
 $(OBJ)/table-server.o: $(SRC)/table-server.c $(INC)/inet.h $(INC)/table-private.h $(INC)/message-private.h
 	gcc -c $(SRC)/table-server.c -o $(OBJ)/table-server.o
@@ -92,7 +92,7 @@ $(OBJ)/data.o: $(SRC)/data.c $(INC)/data.h
 			
 clean:
 	rm -f obj/*.o
-	rm -f test_table test_message table-server
+	rm -f test_table test_message table-server table-client
 	rm -f *~
 	
 .PHONY: clean

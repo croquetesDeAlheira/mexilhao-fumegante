@@ -90,9 +90,10 @@ int read_all(int sock, char *buf, int len){
 
 /* Função que recebe uma tabela e uma mensagem de pedido e:
 	- aplica a operação na mensagem de pedido na tabela;
-	- devolve uma mensagem de resposta com oresultado.
+	- devolve uma mensagem de resposta com o resultado.
 */
 struct message_t *process_message(struct message_t *msg_pedido, struct table_t *tabela){
+	mensagem para devolver a resposta
 	struct message_t *msg_resposta = (struct message_t*)malloc(sizeof(struct message_t));
 	
 	if(msg_resposta == NULL){
@@ -111,7 +112,7 @@ struct message_t *process_message(struct message_t *msg_pedido, struct table_t *
 	// opcode de resposta tem que ser opcode + 1
 	switch(opcode){
 		case OC_SIZE:
-			msg_resposta->opcode = opcode+1;
+			msg_resposta->opcode = opcode + 1;
 			msg_resposta->c_type = CT_RESULT;
 			msg_resposta->content.result = table_size(tabela);
 			break;
@@ -239,7 +240,8 @@ int main(int argc, char **argv){
 	socklen_t size_client;
 	struct table_t *table;
 
-	if (argc != 2){
+	// Nota: 3 argumentos. O nome do programa conta!
+	if (argc != 3){
 	printf("Uso: ./server <porta TCP> <dimensão da tabela>\n");
 	printf("Exemplo de uso: ./table-server 54321 10\n");
 	return -1;
