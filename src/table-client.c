@@ -19,15 +19,15 @@
 #include <stdio.h>
 
 #include "../include/network_client-private.h"
+#include "../include/message-private.h"
 
 // Definindo os tipos de comandos
 #define BADKEY -1
 #define PUT 1
-#define KEY 2
+#define GET 2
 #define UPDATE 3
 #define DEL 4
 #define SIZE 5
-#define GET 6
 
 const char space[2] = " ";
 
@@ -231,7 +231,9 @@ int main(int argc, char **argv){
 					// Atributos de msg
 					msg_out->opcode = OC_GET;
 					msg_out->c_type = CT_KEY;
-					msg_out->content.key = strdup(arguments[0]);
+					// Verifica o tipo de comando
+					msg_out->content.key = arguments[0];
+					break;
 
 				case UPDATE :
 				printf("update\n");
@@ -268,28 +270,14 @@ int main(int argc, char **argv){
 			// Trata de enviar e receber 
 			// Faz os prints necessários
 			if (sigla != BADKEY) {
-				/*// Serializa a msg
-				m_size = message_to_buffer(msg_out, dataToNetwork);
-				// Prepara a msg com o tamanho o pedido a enviar
-				msg_size = (struct message_t*)malloc(sizeof(struct message_t));
-				if (msg_size == NULL) { 
-					free_message(msg_out);			
-					list_free_keys(arguments);	
-					break; 
-				}
-				// Inicilializa atributos
-				msg_size->opcode = OC_SIZE;
-				msg_size->c_type = CT_RESULT;
-				// 
-				msg_size->content.result = m_size;
-				// Envia msg com o tamanho do pedido
-				//network_send_receive(server, msg_out);
-				// Imprime msg a enviar
-				print_msg(msg_out, msg_title_out);
-				*/
+				
+			
 				// Envia a msg com o pedido e aguarda resposta
-				prt("aqui");
+				//prt("aqui");
+				print_msg(msg_out, msg_title_out);
 				msg_resposta = network_send_receive(server, msg_out);
+				// Imprime msg a enviar
+				
 				// Imprime a msg recebida
 				print_msg(msg_resposta, msg_title_in);
 				// Liberta memoria dos argumentos e da memoria

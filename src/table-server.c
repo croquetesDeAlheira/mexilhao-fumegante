@@ -148,10 +148,11 @@ struct message_t *process_message(struct message_t *msg_pedido, struct table_t *
 			msg_resposta->opcode+1;
 			msg_resposta->c_type = CT_RESULT;
 			msg_resposta->content.result = table_put(tabela, msg_pedido->content.entry->key, msg_pedido->content.entry->value);
-			
+			break;
+		
 		default:	
 			printf("opcode nao e´ valido, opcode = %i\n", opcode);
-		}
+	}
 	/* Preparar mensagem de resposta */
 
 	return msg_resposta;
