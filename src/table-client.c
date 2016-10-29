@@ -82,6 +82,7 @@ char ** getTokens (char* token) {
 
 // Função que imprime uma mensagem 
 void print_msg(struct message_t *msg,const char* title) {
+	printf("started print_msg\n");
 	int i;
 	
 	printf("%s\n", title);
@@ -283,9 +284,9 @@ int main(int argc, char **argv){
 				msg_size->content.result = m_size;
 				// Envia msg com o tamanho do pedido
 				//network_send_receive(server, msg_out);
-				*/
 				// Imprime msg a enviar
 				print_msg(msg_out, msg_title_out);
+				*/
 				// Envia a msg com o pedido e aguarda resposta
 				prt("aqui");
 				msg_resposta = network_send_receive(server, msg_out);

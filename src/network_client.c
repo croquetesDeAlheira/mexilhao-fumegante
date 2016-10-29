@@ -75,7 +75,6 @@ struct server_t *network_connect(const char *address_port){
 		perror("Problema na criação do socket\n");
 		return NULL;
 	}
-	printf("socket = %d\n", server->addr->sin_addr);
 
 	// Estabeleber ligação
 	if(connect(sockt, (struct sockaddr *) (server->addr), sizeof(struct sockaddr_in)) < 0){
