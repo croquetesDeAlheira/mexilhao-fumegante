@@ -28,13 +28,13 @@ void prt1(char *str){
 struct server_t *network_connect(const char *address_port){
 	prt1("network_connect started");
 
-	struct server_t *server = malloc(sizeof(struct server_t));
+	struct server_t *server = (struct server_t*)malloc(sizeof(struct server_t));
 	
 	/* Verificar parâmetro da função e alocação de memória */
 	if(address_port == NULL){ return NULL; }
 	if(server == NULL){ return NULL; }
 	/* allocar a memoria do addrs dentro do server*/
-	server->addr = malloc(sizeof(struct sockaddr_in));
+	server->addr = (struct sockaddr_in *)malloc(sizeof(struct sockaddr_in));
 	if(server->addr == NULL){return NULL;}
 
 	// Separar os elementos da string, ip : porto	

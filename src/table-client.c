@@ -163,7 +163,7 @@ int main(int argc, char **argv){
 		   Quando pressionamos enter para finalizar a entrada no
 		   comando fgets, o carater \n é incluido antes do \0.
 		   Convém retirar o \n substituindo-o por \0.
-		*/
+		k*/
 		fgets(input,80,stdin);
 
 		// Retirar o caracter \n
