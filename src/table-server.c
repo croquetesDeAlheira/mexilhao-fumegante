@@ -106,7 +106,7 @@ struct message_t *process_message(struct message_t *msg_pedido, struct table_t *
 	/* Verificar opcode e c_type na mensagem de pedido */
 	short opcode = msg_pedido->opcode;
 	short c_type =msg_pedido->c_type;	
-	int get_res;
+	char *all = "!";
 	/* Aplicar operação na tabela */
 	// opcode de resposta tem que ser opcode + 1
 	switch(opcode){
@@ -132,7 +132,7 @@ struct message_t *process_message(struct message_t *msg_pedido, struct table_t *
 			// c_type se for key table_get
 			msg_resposta->opcode = opcode+1;
 
-			if(msg_pedido->content.key == '!' && tabela->nElems > 0){
+			if((msg_pedido->content.key == all) && tabela->nElems > 0){
 				msg_resposta->c_type = CT_KEYS;
 				msg_resposta->content.keys = table_get_keys(tabela);
 			}else if(table_get(tabela, msg_pedido->content.key) == NULL){
@@ -140,7 +140,7 @@ struct message_t *process_message(struct message_t *msg_pedido, struct table_t *
 				msg_resposta->content.result = ERROR;
 			}else{
 				msg_resposta->c_type = CT_KEYS;
-				msg_resposta->content.keys = table_get(tabela, msg_pedido->content.key);
+				msg_resposta->content.data = table_get(tabela, msg_pedido->content.key);
 			}
 			break;			
 		case OC_PUT:
