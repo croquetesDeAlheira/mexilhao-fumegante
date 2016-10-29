@@ -26,7 +26,6 @@ void prt1(char *str){
 }
 
 struct server_t *network_connect(const char *address_port){
-	prt1("network_connect started");
 
 	struct server_t *server = (struct server_t*)malloc(sizeof(struct server_t));
 	
@@ -47,6 +46,9 @@ struct server_t *network_connect(const char *address_port){
 	token = strtok(NULL, ip_port_seperator);
 	port = strdup(token);
 	free(p);
+
+	prt1(ip);
+	prt1(port);
 	
 	//fixing inet addrs
 	int inet_res = inet_pton(AF_INET, ip, &(server->addr->sin_addr));
@@ -73,14 +75,15 @@ struct server_t *network_connect(const char *address_port){
 		perror("Problema na criação do socket\n");
 		return NULL;
 	}
+	printf("socket = %d\n", server->addr->sin_addr);
 
 	// Estabeleber ligação
-	if(connect(sockt, (struct sockaddr *) &server->addr, sizeof(server->addr)) < 0){
+	if(connect(sockt, (struct sockaddr *) (server->addr), sizeof(struct sockaddr_in)) < 0){
 		perror("Problema a conectar ao servidor\n");
 		return NULL;
 	}
+
 	/* Se a ligação não foi estabelecida, retornar NULL */
-	prt1("network_connect finished- status connected");
 	server->socket = sockt;
 	return server;
 }
