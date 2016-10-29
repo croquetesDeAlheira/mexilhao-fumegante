@@ -253,6 +253,7 @@ int main(int argc, char **argv){
 	result = close(listening_socket);
 	return -1;
 	}
+	printf("server is online");
 
 	while ((connsock = accept(listening_socket, (struct sockaddr *) &client, &size_client)) != -1) {
 		printf(" * Client is connected!\n");

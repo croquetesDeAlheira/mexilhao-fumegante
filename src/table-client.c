@@ -208,6 +208,7 @@ int main(int argc, char **argv){
 					break;
 
 				case PUT :
+					printf("put\n");
 					// argumentos do put
 					arguments = getTokens(token);
 					size = strlen(arguments[1]) + 1;
@@ -224,6 +225,7 @@ int main(int argc, char **argv){
 					break;
 
 				case GET :
+				printf("get\n");
 					arguments = getTokens(token);
 					// Atributos de msg
 					msg_out->opcode = OC_GET;
@@ -231,6 +233,7 @@ int main(int argc, char **argv){
 					msg_out->content.key = strdup(arguments[0]);
 
 				case UPDATE :
+				printf("update\n");
 					// argumentos do put
 					arguments = getTokens(token);
 					size = strlen(arguments[1]) + 1;
@@ -246,6 +249,7 @@ int main(int argc, char **argv){
 					break;
 
 				case DEL : 
+				printf("del\n");
 					arguments = getTokens(token);		
 					msg_out->opcode = OC_DEL;
 					msg_out->c_type = CT_KEY;
@@ -253,6 +257,7 @@ int main(int argc, char **argv){
 					break;
 
 				case SIZE :	
+				printf("size\n");
 					msg_out->opcode = OC_SIZE;
 					msg_out->c_type = CT_RESULT; 
 					break;
@@ -262,7 +267,7 @@ int main(int argc, char **argv){
 			// Trata de enviar e receber 
 			// Faz os prints necessários
 			if (sigla != BADKEY) {
-				// Serializa a msg
+				/*// Serializa a msg
 				m_size = message_to_buffer(msg_out, dataToNetwork);
 				// Prepara a msg com o tamanho o pedido a enviar
 				msg_size = (struct message_t*)malloc(sizeof(struct message_t));
@@ -277,14 +282,18 @@ int main(int argc, char **argv){
 				// 
 				msg_size->content.result = m_size;
 				// Envia msg com o tamanho do pedido
-				network_send_receive(server, msg_out);
+				//network_send_receive(server, msg_out);
+				*/
 				// Imprime msg a enviar
 				print_msg(msg_out, msg_title_out);
 				// Envia a msg com o pedido e aguarda resposta
+				prt("aqui");
 				msg_resposta = network_send_receive(server, msg_out);
 				// Imprime a msg recebida
 				print_msg(msg_resposta, msg_title_in);
 				// Liberta memoria dos argumentos e da memoria
+				
+				
 				free_message(msg_out);
 				free_message(msg_size);			
 				list_free_keys(arguments);	
