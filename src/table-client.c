@@ -264,7 +264,7 @@ int main(int argc, char **argv){
 				print_msg(msg_out, msg_title_out);
 				msg_resposta = network_send_receive(server, msg_out);
 				// Imprime msg a enviar
-				
+				printf("passou o network send receive\n");
 				// Imprime a msg recebida
 				print_msg(msg_resposta, msg_title_in);
 				// Liberta memoria dos argumentos e da memoria
