@@ -85,6 +85,7 @@ void print_msg(struct message_t *msg,const char* title) {
 	int i;
 	
 	printf("%s\n", title);
+	printf("opcode = %i\n", msg->opcode);
 	printf("opcode: %d, c_type: %d\n", msg->opcode, msg->c_type);
 	switch(msg->c_type) {
 		case CT_ENTRY:{
