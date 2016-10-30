@@ -96,16 +96,14 @@ void print_msg(struct message_t *msg,const char* title) {
 			printf("key: %s\n", msg->content.key);
 		}break;
 		case CT_KEYS:{
-			for(i = 0; msg->content.keys[i] != NULL; i++) {
-				printf("key[%d]: %s\n", i, msg->content.keys[i]);
-			}
+				for(i = 0; msg->content.keys[i] != NULL; i++) {
+					printf("key[%d]: %s\n", i, msg->content.keys[i]);
+				}
 		}break;
 		case CT_VALUE:{
-			if(strcmp(msg->content.data->data, "marcus") == 0){
-				printf("Key não existe\n");
-			}else{
+			printf("data: %s\n",(char*)msg->content.data->data);
 			printf("datasize: %d\n", msg->content.data->datasize);
-			}
+			
 		}break;
 		case CT_RESULT:{
 			printf("result: %d\n", msg->content.result);

@@ -21,7 +21,6 @@
 #define ERROR -1
 #define OK 0
 
-
 /* Função para preparar uma socket de receção de pedidos de ligação.
 */
 int make_server_socket(short port){
@@ -108,9 +107,14 @@ struct message_t *process_message(struct message_t *msg_pedido, struct table_t *
 	short opcode = msg_pedido->opcode;
 	short c_type =msg_pedido->c_type;	
 	char *all = "!";
-	struct data_t *dataRet = data_create2(sizeof("marcus"), "marcus");
+	// Mensagem de uma chave que nao existe
+	char* n_existe = "Nao existe";
+	struct data_t *dataRet = data_create2(strlen(n_existe) + 1, n_existe);
 	/* Aplicar operação na tabela */
 	// opcode de resposta tem que ser opcode + 1
+	char** all_keys;
+	char* msg_chaves_vazias = "Nao existem chaves";
+	char* msg_erro = "Erro... Volte a tentar!";
 	switch(opcode){
 		case OC_SIZE:
 			msg_resposta->opcode = OC_SIZE_R;
@@ -136,9 +140,18 @@ struct message_t *process_message(struct message_t *msg_pedido, struct table_t *
 			printf("process message oc get\n");
 			printf("all %s\n", msg_pedido->content.key);
 			if(strcmp(msg_pedido->content.key,all) == 0){
+				// Get de todas as chaves
 				printf("get1\n");
 				msg_resposta->c_type = CT_KEYS;
-				msg_resposta->content.keys = table_get_keys(tabela);
+				all_keys = table_get_keys(tabela);
+				if (all_keys == NULL) {
+					// Será erro ou tabela vazia
+					if (table_size(tabela) == 0)
+						all_keys = &msg_chaves_vazias;
+					else
+						all_keys = &msg_erro;
+				}
+				msg_resposta->content.keys = all_keys;
 			}else if(table_get(tabela, msg_pedido->content.key) == NULL){
 				printf("get2\n");
 				//struct data_t *dataRet = data_create(0);
