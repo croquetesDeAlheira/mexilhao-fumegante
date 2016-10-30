@@ -182,7 +182,7 @@ int message_to_buffer(struct message_t *msg, char **msg_buf){
 struct message_t *buffer_to_message(char *msg_buf, int msg_size){
 	/* Verificar se msg_buf é NULL */
 	/* msg_size tem tamanho mínimo ? */
-	if(msg_buf == NULL || msg_size < 6){ return NULL;}
+	if(msg_buf == NULL || msg_size < 6){return NULL;}
 
 	//variaveis uteis
 	uint16_t short_aux;
@@ -200,7 +200,7 @@ struct message_t *buffer_to_message(char *msg_buf, int msg_size){
 	/* Recuperar o opcode e c_type */
 	memcpy(&short_aux, msg_buf, _SHORT);
 	msg->opcode = ntohs(short_aux);
-	msg_buf += _SHORT;
+	msg_buf += _SHORT;;
 
 	memcpy(&short_aux, msg_buf, _SHORT);
 	msg->c_type = ntohs(short_aux);
@@ -351,6 +351,21 @@ int opIsValid(short opcode){
 			return 1;
 			break;
 		case OC_PUT :
+			return 1;
+			break;
+		case OC_SIZE + 1 :
+			return 1;
+			break;
+		case OC_DEL + 1 :
+			return 1;
+			break;
+		case OC_UPDATE + 1 :
+			return 1;
+			break;
+		case OC_GET + 1 :
+			return 1;
+			break;
+		case OC_PUT + 1 :
 			return 1;
 			break;
 		default :

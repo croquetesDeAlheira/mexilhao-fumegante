@@ -82,7 +82,6 @@ char ** getTokens (char* token) {
 
 // Função que imprime uma mensagem 
 void print_msg(struct message_t *msg,const char* title) {
-	printf("started print_msg\n");
 	int i;
 	
 	printf("%s\n", title);
@@ -110,10 +109,6 @@ void print_msg(struct message_t *msg,const char* title) {
 	printf("-------------------\n");
 }
 
-void prt(char *str){
-	printf("%s\n", str);
-}
-
 
 
 
@@ -122,7 +117,6 @@ void prt(char *str){
  *                    Main Function                         *
  ************************************************************/
 int main(int argc, char **argv){
-	prt("started cliente");
 
 	struct server_t *server;
 	char input[81];
@@ -145,14 +139,11 @@ int main(int argc, char **argv){
 		printf("Exemplo de uso: /table_client 10.101.148.144:54321\n");
 		return -1; 
 	}
-	prt("received args");
-	prt(argv[1]);
 
 	/* Usar network_connect para estabelecer ligação ao servidor */
 	// Passa ip:porto
 	server = network_connect(argv[1]);
 	if(server == NULL){exit(0);}
-	prt("connected to network");
 	/* Fazer ciclo até que o utilizador resolva fazer "quit" */
 	stop = 0;
  	while (stop == 0){ 
@@ -209,7 +200,6 @@ int main(int argc, char **argv){
 					break;
 
 				case PUT :
-					printf("put\n");
 					// argumentos do put
 					arguments = getTokens(token);
 					size = strlen(arguments[1]) + 1;
@@ -226,7 +216,6 @@ int main(int argc, char **argv){
 					break;
 
 				case GET :
-				printf("get\n");
 					arguments = getTokens(token);
 					// Atributos de msg
 					msg_out->opcode = OC_GET;
@@ -236,7 +225,6 @@ int main(int argc, char **argv){
 					break;
 
 				case UPDATE :
-				printf("update\n");
 					// argumentos do put
 					arguments = getTokens(token);
 					size = strlen(arguments[1]) + 1;
@@ -252,7 +240,6 @@ int main(int argc, char **argv){
 					break;
 
 				case DEL : 
-				printf("del\n");
 					arguments = getTokens(token);		
 					msg_out->opcode = OC_DEL;
 					msg_out->c_type = CT_KEY;
@@ -260,7 +247,6 @@ int main(int argc, char **argv){
 					break;
 
 				case SIZE :	
-				printf("size\n");
 					msg_out->opcode = OC_SIZE;
 					msg_out->c_type = CT_RESULT; 
 					break;
@@ -282,10 +268,10 @@ int main(int argc, char **argv){
 				print_msg(msg_resposta, msg_title_in);
 				// Liberta memoria dos argumentos e da memoria
 				
-				
-				free_message(msg_out);
-				free_message(msg_size);			
-				list_free_keys(arguments);	
+				/*ISSO AQUI EM BAIXO TA A DAR ALGUM ERRO...TEMOS DE VER DEPOIS COMO FAZEMOS ESSES FREES */
+				//free_message(msg_out);
+				//free_message(msg_size);			
+				//list_free_keys(arguments);	
 			}
 			
 		}

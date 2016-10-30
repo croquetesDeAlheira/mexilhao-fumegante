@@ -94,7 +94,6 @@ int read_all(int sock, char *buf, int len){
 */
 struct message_t *process_message(struct message_t *msg_pedido, struct table_t *tabela){
 	//mensagem para devolver a resposta
-	printf("process message\n");
 	struct message_t *msg_resposta = (struct message_t*)malloc(sizeof(struct message_t));
 	
 	if(msg_resposta == NULL){
@@ -113,18 +112,17 @@ struct message_t *process_message(struct message_t *msg_pedido, struct table_t *
 	// opcode de resposta tem que ser opcode + 1
 	switch(opcode){
 		case OC_SIZE:
-			msg_resposta->opcode = OC_SIZE_R;
+			msg_resposta->opcode = opcode + 1;
 			msg_resposta->c_type = CT_RESULT;
 			msg_resposta->content.result = table_size(tabela);
-			printf("size = %i\n", table_size(tabela));
 			break;
 		case OC_DEL:
-			msg_resposta->opcode = OC_DEL_R;
+			msg_resposta->opcode = opcode+1;
 			msg_resposta->c_type = CT_RESULT;
 			msg_resposta->content.result = table_del(tabela, msg_pedido->content.key);
 			break;
 		case OC_UPDATE:
-			msg_resposta->opcode = OC_UPDATE_R;
+			msg_resposta->opcode = opcode+1;
 			msg_resposta->c_type = CT_RESULT;
 			msg_resposta->content.result = table_update(tabela, msg_pedido->content.entry->key, msg_pedido->content.entry->value);
 			break;
@@ -133,7 +131,7 @@ struct message_t *process_message(struct message_t *msg_pedido, struct table_t *
 			// c_type CT_KEYS
 			// c_type se for ! table_get_keys
 			// c_type se for key table_get
-			msg_resposta->opcode = OC_GET_R;
+			msg_resposta->opcode = opcode+1;
 
 			if((msg_pedido->content.key == all) && tabela->nElems > 0){
 				msg_resposta->c_type = CT_KEYS;
@@ -147,7 +145,7 @@ struct message_t *process_message(struct message_t *msg_pedido, struct table_t *
 			}
 			break;			
 		case OC_PUT:
-			msg_resposta->opcode = OC_PUT_R;
+			msg_resposta->opcode+1;
 			msg_resposta->c_type = CT_RESULT;
 			msg_resposta->content.result = table_put(tabela, msg_pedido->content.entry->key, msg_pedido->content.entry->value);
 			break;
@@ -256,8 +254,6 @@ int main(int argc, char **argv){
 	result = close(listening_socket);
 	return -1;
 	}
-	printf("server is online");
-
 	while ((connsock = accept(listening_socket, (struct sockaddr *) &client, &size_client)) != -1) {
 		printf(" * Client is connected!\n");
 

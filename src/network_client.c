@@ -21,11 +21,6 @@
 
 
 
-
-void prt1(char *str){
-	printf("%s\n", str);
-}
-
 struct server_t *network_connect(const char *address_port){
 
 	struct server_t *server = (struct server_t*)malloc(sizeof(struct server_t));
@@ -47,14 +42,9 @@ struct server_t *network_connect(const char *address_port){
 	token = strtok(NULL, ip_port_seperator);
 	port = strdup(token);
 	free(p);
-
-	prt1(ip);
-	prt1(port);
 	
 	//fixing inet addrs
 	int inet_res = inet_pton(AF_INET, ip, &(server->addr->sin_addr));
-
-	printf("inet rest = %d\n", inet_res );
 	if(inet_res == -1){
 		return NULL;
 	}else if(inet_res == 0){
@@ -89,7 +79,6 @@ struct server_t *network_connect(const char *address_port){
 }
 
 struct message_t *network_send_receive(struct server_t *server, struct message_t *msg){
-	prt1("network_send_receive started");
 	char *message_out;
 	int message_size, msg_size, result;
 	struct message_t *msg_resposta;
