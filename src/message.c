@@ -245,7 +245,7 @@ struct message_t *buffer_to_message(char *msg_buf, int msg_size){
 				memcpy(&int_aux, msg_buf, _INT);
 				numKeys = ntohl(int_aux);
 				msg_buf += _INT;
-				char **keys = (char **)malloc(sizeof(char *) * numKeys);
+				char **keys = (char **)malloc(sizeof(char *) * numKeys  + 1);
 				int i = 0;
 				char *aux;
 				for (i = 0; i < numKeys; i++){
@@ -261,6 +261,7 @@ struct message_t *buffer_to_message(char *msg_buf, int msg_size){
 					free(aux);
 					msg_buf += strSize;
 				}
+				*(keys + i) = NULL;
 				msg->content.keys = keys;
 				break;
 			

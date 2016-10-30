@@ -95,8 +95,11 @@ void print_msg(struct message_t *msg,const char* title) {
 			printf("key: %s\n", msg->content.key);
 		}break;
 		case CT_KEYS:{
-				for(i = 0; msg->content.keys[i] != NULL; i++) {
+				//for(i = 0; msg->content.keys[i] != NULL; i++) {
+				int i = 0;
+				while(msg->content.keys[i] != NULL){
 					printf("key[%d]: %s\n", i, msg->content.keys[i]);
+					i++;
 				}
 		}break;
 		case CT_VALUE:{
