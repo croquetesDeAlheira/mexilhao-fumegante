@@ -141,12 +141,13 @@ struct message_t *process_message(struct message_t *msg_pedido, struct table_t *
 				// Get de todas as chaves
 				msg_resposta->c_type = CT_KEYS;
 				all_keys = table_get_keys(tabela);
-				if (all_keys == NULL) {
+				if (*all_keys == NULL) {
 					// Será erro ou tabela vazia
-					if (table_size(tabela) == 0)
-						all_keys = &msg_chaves_vazias;
-					else
-						all_keys = &msg_erro;
+					if (table_size(tabela) == 0){
+						*all_keys = msg_chaves_vazias;
+					}else{
+						*all_keys = msg_erro;
+					}
 				}
 				msg_resposta->content.keys = all_keys;
 			}else if(table_get(tabela, msg_pedido->content.key) == NULL){
