@@ -273,9 +273,10 @@ int main(int argc, char **argv){
 				// Liberta memoria dos argumentos e da memoria
 				
 				/*ISSO AQUI EM BAIXO TA A DAR ALGUM ERRO...TEMOS DE VER DEPOIS COMO FAZEMOS ESSES FREES */
-				//free_message(msg_out);
-				//free_message(msg_size);			
-				//list_free_keys(arguments);	
+				free_message(msg_out);
+				free_message(msg_resposta);
+				//arguments[2] = NULL;			
+				//table_free_keys(arguments);	
 			}
 			
 		}
