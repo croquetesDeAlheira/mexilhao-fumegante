@@ -108,7 +108,7 @@ struct message_t *process_message(struct message_t *msg_pedido, struct table_t *
 	short opcode = msg_pedido->opcode;
 	short c_type =msg_pedido->c_type;	
 	char *all = "!";
-	struct data_t *dataRet = data_create(0);
+	struct data_t *dataRet = data_create2(sizeof("marcus"), "marcus");
 	/* Aplicar operação na tabela */
 	// opcode de resposta tem que ser opcode + 1
 	switch(opcode){
