@@ -17,6 +17,13 @@
 #define CT_KEYS		40
 #define CT_ENTRY	50
 
+// Códigos de resposta
+#define OC_SIZE_R	11
+#define OC_DEL_R	21
+#define OC_UPDATE_R   	31
+#define OC_GET_R	41
+#define OC_PUT_R	51
+
 /* Estrutura que representa uma mensagem genérica a ser transmitida.
  * Esta mensagem pode ter vários tipos de conteúdos.
  */
