@@ -137,11 +137,8 @@ struct message_t *process_message(struct message_t *msg_pedido, struct table_t *
 			// c_type se for ! table_get_keys
 			// c_type se for key table_get
 			msg_resposta->opcode = OC_GET_R;
-			printf("process message oc get\n");
-			printf("all %s\n", msg_pedido->content.key);
 			if(strcmp(msg_pedido->content.key,all) == 0){
 				// Get de todas as chaves
-				printf("get1\n");
 				msg_resposta->c_type = CT_KEYS;
 				all_keys = table_get_keys(tabela);
 				if (all_keys == NULL) {
@@ -153,12 +150,10 @@ struct message_t *process_message(struct message_t *msg_pedido, struct table_t *
 				}
 				msg_resposta->content.keys = all_keys;
 			}else if(table_get(tabela, msg_pedido->content.key) == NULL){
-				printf("get2\n");
 				//struct data_t *dataRet = data_create(0);
 				msg_resposta->c_type = CT_VALUE;
 				msg_resposta->content.data = dataRet;
 			}else{
-				printf("existe key\n");
 				msg_resposta->c_type = CT_VALUE;
 				msg_resposta->content.data = table_get(tabela, msg_pedido->content.key);
 			}
@@ -173,7 +168,7 @@ struct message_t *process_message(struct message_t *msg_pedido, struct table_t *
 			printf("opcode nao e´ valido, opcode = %i\n", opcode);
 	}
 	/* Preparar mensagem de resposta */
-	printf("opcode = %i, c_type = %i\n", msg_resposta->opcode, msg_resposta->c_type);	
+	//printf("opcode = %i, c_type = %i\n", msg_resposta->opcode, msg_resposta->c_type);	
 	return msg_resposta;
 }
 
@@ -219,37 +214,29 @@ int network_receive_send(int sockfd, struct table_t *table){
 	/* Processar a mensagem */
 	msg_resposta = process_message(msg_pedido, table);
 
-	printf("passa no process message msg resposta\n");
 	/* Serializar a mensagem recebida */
-	printf("msg resposta %i\n", msg_resposta->content.result);
 	message_size = message_to_buffer(msg_resposta, &message_resposta);
-	printf("ok1\n");
 	/* Verificar se a serialização teve sucesso */
 	if(message_resposta <= OK){return ERROR;}
-	printf("ok2\n");
 	/* Enviar ao cliente o tamanho da mensagem que será enviada
 	   logo de seguida
 	*/
 	msg_size = htonl(message_size);
 	result = write_all(sockfd, (char *) &msg_size, _INT);
-	printf("ok3\n");
 	/* Verificar se o envio teve sucesso */
 	if(result != _INT){return ERROR;}
 
 	/* Enviar a mensagem que foi previamente serializada */
-	printf("ok4\n");
 	result = write_all(sockfd, message_resposta, message_size);
 
 	/* Verificar se o envio teve sucesso */
 	if(result != message_size){return ERROR;}
-	printf("ok5\n");
 	/* Libertar memória */
 
 	free(message_resposta);
 	free(message_pedido);
 	free(msg_resposta);
 	free(msg_pedido);
-	printf("ok6\n");
 	return OK;
 }
 

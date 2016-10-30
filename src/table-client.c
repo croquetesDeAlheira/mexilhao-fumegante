@@ -83,7 +83,6 @@ char ** getTokens (char* token) {
 // Função que imprime uma mensagem 
 void print_msg(struct message_t *msg,const char* title) {
 	int i;
-	printf("opcode = %i\n", msg->opcode);
 	printf("%s\n", title);
 	//printf("opcode = %i\n", msg->opcode);
 	printf("opcode: %d, c_type: %d\n", msg->opcode, msg->c_type);
@@ -266,7 +265,6 @@ int main(int argc, char **argv){
 				print_msg(msg_out, msg_title_out);
 				msg_resposta = network_send_receive(server, msg_out);
 				// Imprime msg a enviar
-				printf("passou o network send receive\n");
 				// Imprime a msg recebida
 				print_msg(msg_resposta, msg_title_in);
 				// Liberta memoria dos argumentos e da memoria

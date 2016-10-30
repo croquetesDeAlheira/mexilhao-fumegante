@@ -31,7 +31,6 @@ struct data_t *data_create(int size) {
   }
   //Inicializando atributo size
   p->datasize = size;
-  printf("datasize em data.c %i\n", p->datasize);
   return p;
 }
 

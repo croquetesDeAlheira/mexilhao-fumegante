@@ -47,13 +47,10 @@ int message_to_buffer(struct message_t *msg, char **msg_buf){
 			break;
 
 		case CT_VALUE :
-			printf("m1\n");
 			/* datasize int */
 			vetorSize += _INT; 
-			printf("m1.1\n");
 			/* soma o valor do datasize */
 			vetorSize += msg->content.data->datasize;
-			printf("m2\n");
 			break;
 
 		case CT_KEY :
@@ -97,10 +94,8 @@ int message_to_buffer(struct message_t *msg, char **msg_buf){
 	/* Alocar quantidade de memória determinada antes 
 	*msg_buf = ....
 	*/
-	printf("m3\n");
 	*msg_buf = (char *)malloc(vetorSize);
 	if(msg_buf == NULL){return ERROR;}
-	printf("m4\n");
 	/* Inicializar ponteiro auxiliar com o endereço da memória alocada */
 	char *ptr = *msg_buf;
 
@@ -126,18 +121,15 @@ int message_to_buffer(struct message_t *msg, char **msg_buf){
 			break;
 
 		case CT_VALUE :
-			printf("m5\n");
 			/* serializar value tipo data_t  */
 			/* datasize , tamanho do data  */
 			dataSize = msg->content.data->datasize;
-			printf("m6\n");
 			int_value = htonl(dataSize);
 			memcpy(ptr, &int_value, _INT);
 			ptr += _INT;
 			/*  serializar o valor do data */
 			memcpy(ptr, msg->content.data->data, dataSize);
 			ptr += dataSize;
-			printf("m7\n");
 			break;
 
 		case CT_KEY :
