@@ -108,6 +108,7 @@ struct message_t *process_message(struct message_t *msg_pedido, struct table_t *
 	short opcode = msg_pedido->opcode;
 	short c_type =msg_pedido->c_type;	
 	char *all = "!";
+	struct data_t *dataRet = data_create(0);
 	/* Aplicar operação na tabela */
 	// opcode de resposta tem que ser opcode + 1
 	switch(opcode){
@@ -140,8 +141,9 @@ struct message_t *process_message(struct message_t *msg_pedido, struct table_t *
 				msg_resposta->content.keys = table_get_keys(tabela);
 			}else if(table_get(tabela, msg_pedido->content.key) == NULL){
 				printf("get2\n");
+				//struct data_t *dataRet = data_create(0);
 				msg_resposta->c_type = CT_VALUE;
-				msg_resposta->content.result = ERROR;
+				msg_resposta->content.data = dataRet;
 			}else{
 				printf("existe key\n");
 				msg_resposta->c_type = CT_VALUE;
@@ -206,6 +208,7 @@ int network_receive_send(int sockfd, struct table_t *table){
 
 	printf("passa no process message msg resposta\n");
 	/* Serializar a mensagem recebida */
+	printf("msg resposta %i\n", msg_resposta->content.result);
 	message_size = message_to_buffer(msg_resposta, &message_resposta);
 	printf("ok1\n");
 	/* Verificar se a serialização teve sucesso */
