@@ -78,7 +78,7 @@ int read_all(int sock, char *buf, int len){
 		int res = read(sock, buf, len);
 		if(res < 0){
 			if(errno == EINTR) continue;
-			perror("write failed:");
+			perror("read failed:");
 			return res;
 		}
 		buf+= res;
