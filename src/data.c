@@ -15,7 +15,7 @@
  */
 struct data_t *data_create(int size) {
   // Verififica consistencia do parametro size
-  if (size < 0)
+  if (size <= 0)
     return NULL;
   // Apontador data_t de memória dinamica
   struct data_t *p = (struct data_t*)malloc(sizeof(struct data_t));
