@@ -132,6 +132,7 @@ struct message_t *network_send_receive(struct server_t *server, struct message_t
 	if(result != _INT){return NULL;}
 	
 	message_size = ntohl(msg_size);
+	free(message_out);
 	
 	/*	Alocar memória para receber o número de bytes da
 		mensagem de resposta.*/
